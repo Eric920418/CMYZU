@@ -37,7 +37,8 @@
       "Bash(pnpm db:push:*)",
       "Bash(chmod:*)",
       "Bash(pnpm update:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ],
     "deny": []
   }
