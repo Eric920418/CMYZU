@@ -5,7 +5,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function formatDate(date: Date | string, locale: string = 'zh-TW') {
+export function formatDate(date: Date | string, locale: string = 'zh') {
   const dateObj = typeof date === 'string' ? new Date(date) : date;
 
   return new Intl.DateTimeFormat(locale, {

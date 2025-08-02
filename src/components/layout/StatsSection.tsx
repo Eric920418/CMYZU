@@ -87,7 +87,7 @@ export default function StatsSection() {
   ];
 
   return (
-    <section className="py-20 bg-gradient-to-r from-primary-600 to-primary-700">
+    <section>
       <div className="container">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -96,7 +96,7 @@ export default function StatsSection() {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 ">
             {t('title', { defaultValue: '我們的成就' })}
           </h2>
           <p className="text-xl text-primary-100 max-w-2xl mx-auto">

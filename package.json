@@ -8,35 +8,30 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "db:generate": "prisma generate",
-    "db:push": "prisma db push",
-    "db:migrate": "prisma migrate dev",
-    "db:studio": "prisma studio",
-    "prepare": "husky"
+    "prepare": "husky",
+    "start:all": "./start.sh",
+    "dev:frontend": "next dev",
+    "dev:backend": "cd backend && PORT=4000 pnpm dev"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.6.0",
-    "@prisma/client": "^5.14.0",
-    "@types/bcryptjs": "^2.4.6",
-    "@types/jsonwebtoken": "^9.0.6",
-    "@types/nodemailer": "^6.4.15",
-    "bcryptjs": "^2.4.3",
+    "axios": "^1.11.0",
     "clsx": "^2.1.1",
     "framer-motion": "^11.2.6",
-    "jsonwebtoken": "^9.0.2",
     "next": "14.2.3",
     "next-intl": "^4.3.4",
-    "nodemailer": "^6.9.13",
     "react": "^18",
     "react-dom": "^18",
     "react-hook-form": "^7.52.0",
     "sharp": "^0.33.4",
+    "swr": "^2.3.4",
     "tailwind-merge": "^2.3.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.3.0",
     "@commitlint/config-conventional": "^19.2.2",
+    "@tailwindcss/postcss": "^4.1.11",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
@@ -48,19 +43,14 @@
     "eslint-config-prettier": "^9.1.0",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.5",
-    "postcss": "^8",
+    "postcss": "^8.5.6",
     "prettier": "^3.3.0",
-    "prisma": "^5.14.0",
-    "tailwindcss": "^3.4.1",
+    "tailwindcss": "^4.1.11",
     "typescript": "^5.5.4"
   },
   "pnpm": {
     "ignoredBuiltDependencies": [
-      "@prisma/client",
-      "@prisma/engines",
-      "prisma",
-      "sharp",
-      "unrs-resolver"
+      "sharp"
     ]
   }
 }

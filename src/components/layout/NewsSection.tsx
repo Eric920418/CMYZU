@@ -49,7 +49,7 @@ export default function NewsSection() {
   ];
 
   return (
-    <section className="py-20 bg-white">
+    <section>
       <div className="container">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -77,7 +77,7 @@ export default function NewsSection() {
               className="group cursor-pointer"
             >
               <Link href={`/news/${item.id}`}>
-                <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 overflow-hidden border border-gray-100">
+                <div className="backdrop-blur-sm bg-white/50 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform overflow-hidden border border-white/40">
                   {/* 圖片區域 */}
                   <div className="relative h-48 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
@@ -120,7 +120,7 @@ export default function NewsSection() {
                           d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 0V6a2 2 0 012-2h2a2 2 0 012 2v1M8 7h8M5 10h14l-1 7H6l-1-7z"
                         />
                       </svg>
-                      {new Date(item.date).toLocaleDateString('zh-TW')}
+                      {new Date(item.date).toLocaleDateString('zh')}
                     </div>
                     <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-primary-600 transition-colors line-clamp-2">
                       {item.title}

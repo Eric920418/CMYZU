@@ -45,7 +45,7 @@ export default function Footer() {
     },
   };
   return (
-    <footer className="bg-gray-900 text-white">
+    <footer className="bg-gray-500 text-white flex flex-col items-center justify-center">
       <div className="container">
         <div className="py-16">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">

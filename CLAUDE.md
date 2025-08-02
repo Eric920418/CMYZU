@@ -1,3 +1,4 @@
+每次先閱讀readme
 所有catch到的error都要顯示在前台
 一率使用pnpm引入
 每次更新都要記錄在reamdme裡面標上日期跟改動

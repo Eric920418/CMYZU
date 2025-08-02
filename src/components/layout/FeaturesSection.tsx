@@ -100,7 +100,7 @@ export default function FeaturesSection() {
   ];
 
   return (
-    <section className="py-20 bg-gray-50">
+    <section>
       <div className="container">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -130,7 +130,7 @@ export default function FeaturesSection() {
               viewport={{ once: true }}
               className="group"
             >
-              <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-100">
+              <div className="backdrop-blur-sm bg-white/40 rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 transform border border-white/30">
                 <div
                   className={`inline-flex items-center justify-center w-16 h-16 rounded-xl bg-gradient-to-r ${feature.color} mb-6 group-hover:scale-110 transition-transform duration-300`}
                 >

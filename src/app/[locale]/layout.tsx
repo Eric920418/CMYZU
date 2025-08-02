@@ -5,6 +5,7 @@ import { Noto_Sans, Noto_Serif } from 'next/font/google';
 import '../globals.css';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import { AuthProvider } from '@/contexts/AuthContext';
 
 const notoSans = Noto_Sans({
   subsets: ['latin'],
@@ -57,8 +58,8 @@ export async function generateMetadata({
     alternates: {
       canonical: `/${locale}`,
       languages: {
-        'zh-TW': '/zh',
-        'en-US': '/en',
+        zh: '/zh',
+        en: '/en',
       },
     },
     openGraph: {
@@ -107,11 +108,19 @@ export default async function LocaleLayout({
       lang={locale}
       className={`${notoSans.variable} ${notoSerif.variable}`}
     >
-      <body>
+      <body
+        className="bg-cover bg-center bg-no-repeat bg-fixed"
+        style={{
+          backgroundImage: `url('/hero-building.webp')`,
+          backgroundAttachment: 'fixed',
+        }}
+      >
         <NextIntlClientProvider locale={locale} messages={messages}>
-          <Header />
-          <main className="min-h-screen">{children}</main>
-          <Footer />
+          <AuthProvider>
+            <Header />
+            <main className="min-h-screen">{children}</main>
+            <Footer />
+          </AuthProvider>
         </NextIntlClientProvider>
       </body>
     </html>

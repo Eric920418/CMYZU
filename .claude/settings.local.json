@@ -1,4 +1,5 @@
 {
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "permissions": {
     "allow": [
       "Bash(pnpm create:*)",
@@ -19,7 +20,24 @@
       "Bash(PORT=3001 pnpm dev)",
       "Bash(pnpm typecheck:*)",
       "Bash(pnpm db:generate:*)",
-      "Bash(pnpm exec eslint:*)"
+      "Bash(pnpm exec eslint:*)",
+      "Bash(pnpm init:*)",
+      "Bash(cp:*)",
+      "Bash(pnpm remove:*)",
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(pnpm lint:*)",
+      "Bash(kill:*)",
+      "Bash(PORT=4000 pnpm --prefix backend dev)",
+      "Bash(PORT=4000 pnpm dev)",
+      "Bash(pnpm build:*)",
+      "Bash(psql:*)",
+      "Bash(pg_isready:*)",
+      "Bash(createdb:*)",
+      "Bash(pnpm db:push:*)",
+      "Bash(chmod:*)",
+      "Bash(pnpm update:*)",
+      "Bash(git add:*)"
     ],
     "deny": []
   }
