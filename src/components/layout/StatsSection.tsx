@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
+import { useCountAnimation } from '@/hooks/useCountAnimation';
 
 // 統計數據展示區塊
 export default function StatsSection() {
@@ -9,7 +10,8 @@ export default function StatsSection() {
 
   const stats = [
     {
-      number: '50+',
+      value: 50,
+      suffix: '+',
       label: t('years', { defaultValue: '年辦學歷史' }),
       icon: (
         <svg
@@ -28,7 +30,8 @@ export default function StatsSection() {
       ),
     },
     {
-      number: '10,000+',
+      value: 10000,
+      suffix: '+',
       label: t('students', { defaultValue: '在學學生' }),
       icon: (
         <svg
@@ -47,7 +50,8 @@ export default function StatsSection() {
       ),
     },
     {
-      number: '500+',
+      value: 500,
+      suffix: '+',
       label: t('faculty', { defaultValue: '優秀教師' }),
       icon: (
         <svg
@@ -66,7 +70,8 @@ export default function StatsSection() {
       ),
     },
     {
-      number: '95%',
+      value: 95,
+      suffix: '%',
       label: t('employment', { defaultValue: '就業率' }),
       icon: (
         <svg
@@ -86,6 +91,46 @@ export default function StatsSection() {
     },
   ];
 
+  // 統計項目組件，使用數字計數動畫
+  const StatItem = ({
+    stat,
+    index,
+  }: {
+    stat: (typeof stats)[0];
+    index: number;
+  }) => {
+    const { count, elementRef } = useCountAnimation({
+      end: stat.value,
+      duration: 1200,
+      decimals: 0,
+      delay: index * 150, // 每個項目延遲 150ms，創造波浪效果
+    });
+
+    // 格式化數字顯示（添加千分位逗號）
+    const formatNumber = (num: number) => {
+      return Math.round(num).toLocaleString();
+    };
+
+    return (
+      <div ref={elementRef} className="text-center group">
+        <div className="inline-flex items-center justify-center  bg-white/10 rounded-full mb-4 group-hover:bg-white/20 transition-colors duration-300">
+          <div className="text-white transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110">
+            {stat.icon}
+          </div>
+        </div>
+        <div className="text-4xl md:text-5xl font-bold text-white mb-2 transition-colors duration-300 group-hover:text-yellow-200">
+          <div className="w-[140px] md:w-full mx-auto">
+            <span className="tabular-nums">{formatNumber(count)}</span>
+            <span className="text-primary-200">{stat.suffix}</span>
+          </div>
+        </div>
+        <div className="text-primary-100 font-medium transition-colors duration-300 group-hover:text-white">
+          {stat.label}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <section>
       <div className="container">
@@ -97,7 +142,7 @@ export default function StatsSection() {
           className="text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 ">
-            {t('title', { defaultValue: '我們的成就' })}
+            {t('title', { defaultValue: '最國際化的商管學院' })}
           </h2>
           <p className="text-xl text-primary-100 max-w-2xl mx-auto">
             {t('description', {
@@ -107,24 +152,14 @@ export default function StatsSection() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-16">
           {stats.map((stat, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              viewport={{ once: true }}
-              className="text-center group"
+            <div
+              key={`stat-${stat.value}-${stat.suffix}`}
+              className="flex items-center justify-center min-h-[180px] min-w-[250px]"
             >
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-white/10 rounded-full mb-4 group-hover:bg-white/20 transition-colors duration-300">
-                <div className="text-white">{stat.icon}</div>
-              </div>
-              <div className="text-4xl md:text-5xl font-bold text-white mb-2 group-hover:scale-110 transition-transform duration-300">
-                {stat.number}
-              </div>
-              <div className="text-primary-100 font-medium">{stat.label}</div>
-            </motion.div>
+              <StatItem stat={stat} index={index} />
+            </div>
           ))}
         </div>
       </div>

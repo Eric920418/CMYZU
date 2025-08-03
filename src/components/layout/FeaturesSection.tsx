@@ -3,10 +3,12 @@
 import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { useScrollState } from '@/hooks/useScrollState';
 
 // 學校特色展示區塊
 export default function FeaturesSection() {
   const t = useTranslations('Features');
+  const isScrolling = useScrollState();
 
   const features = [
     {
@@ -128,7 +130,7 @@ export default function FeaturesSection() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
               viewport={{ once: true }}
-              className="group"
+              className={`group ${isScrolling ? 'scroll-disabled' : ''}`}
             >
               <div className="backdrop-blur-sm bg-white/40 rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 transform border border-white/30">
                 <div

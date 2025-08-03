@@ -3,6 +3,8 @@ import Hero from '@/components/layout/Hero';
 import StatsSection from '@/components/layout/StatsSection';
 import FeaturesSection from '@/components/layout/FeaturesSection';
 import NewsSection from '@/components/layout/NewsSection';
+import ExploreSection from '@/components/layout/ExploreSection';
+import DepartmentsSection from '@/components/layout/DepartmentsSection';
 import { Metadata } from 'next';
 
 // SEO 優化的頁面元數據
@@ -51,13 +53,17 @@ export default function HomePage() {
       {/* 主視覺區域 - 現代建築風格 Hero Section */}
       <Hero />
 
-      <div className="py-20 backdrop-blur-md bg-gray-500/80 border-gray-500/60 flex flex-col items-center justify-center gap-20">
+      <div className="py-20 backdrop-blur-md bg-gray-500/80 border-gray-500/60 flex flex-col items-center justify-center gap-20 relative z-20">
+        {/* 最新消息 */}
+        <NewsSection />
+        {/* 探索元智管理學院 */}
+        <ExploreSection />
+        {/* 系所學程 */}
+        <DepartmentsSection />
         {/* 統計數據展示 */}
         <StatsSection />
         {/* 學校特色介紹 */}
         <FeaturesSection />
-        {/* 最新消息 */}
-        <NewsSection />
       </div>
     </main>
   );

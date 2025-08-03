@@ -8,7 +8,7 @@ const nextConfig = {
     optimizePackageImports: ['framer-motion'],
   },
   images: {
-    domains: ['localhost'],
+    domains: ['localhost', 'upload.wikimedia.org'],
     formats: ['image/webp', 'image/avif'],
   },
   async headers() {

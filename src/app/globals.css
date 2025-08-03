@@ -7,6 +7,27 @@ body {
   padding: 0;
 }
 
+/* 文字陰影效果 */
+.text-shadow-lg {
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* 等寬數字字體，確保數字動畫時不會跳動 */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* 3D 地球動畫效果 */
+@keyframes earthRotate {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+@keyframes earthSurface {
+  0% { transform: rotateY(0deg); }
+  100% { transform: rotateY(360deg); }
+}
+
 .glass-card {
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(2px);
@@ -50,22 +71,104 @@ body {
   );
 }
 
+/* 滾動時禁用 hover 效果 */
+.scroll-disabled:hover .group-hover\:opacity-15 {
+  opacity: 0 !important;
+}
+
+.scroll-disabled:hover .group-hover\:opacity-40 {
+  opacity: 0 !important;
+}
+
+.scroll-disabled:hover .group-hover\:text-primary-600 {
+  color: inherit !important;
+}
+
+.scroll-disabled:hover .group-hover\:translate-x-2 {
+  transform: translateX(0) !important;
+}
+
+.scroll-disabled:hover .group-hover\:border-primary-300\/30 {
+  border-color: transparent !important;
+}
+
+/* 禁用新聞區塊的hover背景效果 */
+.scroll-disabled .hover\:bg-white\/20:hover {
+  background-color: transparent !important;
+}
+
+/* 禁用按鈕的hover效果 */
+.scroll-disabled .hover\:shadow-lg:hover {
+  box-shadow: inherit !important;
+}
+
+.scroll-disabled .hover\:shadow-xl:hover {
+  box-shadow: inherit !important;
+}
+
+.scroll-disabled .hover\:-translate-y-1:hover {
+  transform: translateY(0) !important;
+}
+
+/* 禁用統計數據的hover效果 */
+.scroll-disabled:hover .group-hover\:bg-white\/20 {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.scroll-disabled:hover .group-hover\:scale-110 {
+  transform: scale(1) !important;
+}
+
+/* 禁用特色卡片的hover效果 */
+.scroll-disabled .hover\:shadow-2xl:hover {
+  box-shadow: inherit !important;
+}
+
+.scroll-disabled:hover .group-hover\:text-primary-600 {
+  color: inherit !important;
+}
+
 /* 自定義背景漸變效果 */
 .bg-gradient-radial {
   background: radial-gradient(circle, var(--tw-gradient-stops));
 }
 
-/* Header 展開時的動態背景效果 */
-.header-expanded-bg {
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.1) 0%,
-    rgba(255, 255, 255, 0.2) 25%,
-    rgba(249, 250, 251, 0.3) 50%,
-    rgba(243, 244, 246, 0.4) 75%,
-    rgba(249, 250, 251, 0.5) 100%
-  );
+/* 3D 地球動畫效果 */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.2;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(1.05);
+  }
 }
+
+@keyframes earthRotate {
+  0% {
+    transform: rotateY(0deg);
+  }
+  100% {
+    transform: rotateY(360deg);
+  }
+}
+
+@keyframes orbitRotate {
+  0% {
+    transform: rotateX(60deg) rotateZ(0deg);
+  }
+  100% {
+    transform: rotateX(60deg) rotateZ(360deg);
+  }
+}
+
+/* 支援 3D 效果的容器 */
+.earth-3d {
+  perspective: 1000px;
+  transform-style: preserve-3d;
+}
+
 
 
 /* CMYZU 品牌色彩系統 - 覆蓋 Tailwind 預設 */

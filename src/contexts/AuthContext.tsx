@@ -154,14 +154,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
+  // 追蹤是否已掛載，避免 SSR/CSR 不一致
+  const [isMounted, setIsMounted] = useState(false);
+
   // 初始化認證狀態
   useEffect(() => {
-    const initializeAuth = async () => {
-      if (typeof window === 'undefined') {
-        setAuthState((prev) => ({ ...prev, isLoading: false }));
-        return;
-      }
+    setIsMounted(true);
 
+    const initializeAuth = async () => {
       const token = localStorage.getItem('auth_token');
       const userData = localStorage.getItem('user_data');
 
@@ -183,6 +183,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     initializeAuth();
   }, []);
+
+  // 在客戶端掛載前，保持 loading 狀態
+  if (!isMounted) {
+    return (
+      <AuthContext.Provider
+        value={{
+          user: null,
+          token: null,
+          isLoading: true,
+          isAuthenticated: false,
+          login,
+          logout,
+          refreshUser,
+          changePassword,
+          showError,
+          showSuccess,
+        }}
+      >
+        {children}
+      </AuthContext.Provider>
+    );
+  }
 
   const contextValue: AuthContextType = {
     ...authState,

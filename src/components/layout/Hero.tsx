@@ -15,29 +15,40 @@ export default function Hero() {
       </div>
 
       <div className="relative z-10 container text-center">
+        {/* 主標題動畫 */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
           {/* 主標題 - 建築感字體設計 */}
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-8 leading-tight">
-            <span className="block text-white drop-shadow-lg">
-              {t('title', { defaultValue: 'CMYZU' })}
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-8 leading-tight relative">
+            <span className="block text-white drop-shadow-lg absolute bottom-10 left-0">
+              YZU
             </span>
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-200 via-blue-300 to-white drop-shadow-lg">
-              {t('subtitle_highlight', { defaultValue: '學校' })}
+            <span className="text-[80px] block text-transparent bg-clip-text bg-gradient-to-r from-amber-600 via-amber-500 to-white drop-shadow-lg absolute bottom-[-30px] left-0">
+              {t('title_main')}
             </span>
           </h1>
-
-          {/* 副標題 - 企業級專業描述 */}
-          <p className="text-xl md:text-2xl text-white/90 mb-12 max-w-4xl mx-auto leading-relaxed backdrop-blur-sm bg-black/20 p-6 rounded-2xl border border-white/20 shadow-lg">
-            {t('subtitle', {
-              defaultValue:
-                '致力於培養具有國際視野、創新思維與社會責任感的優秀人才，為學生提供最優質的教育環境與學習資源。',
-            })}
-          </p>
         </motion.div>
+
+        {/* 副標題動畫 - 獨立控制 */}
+        <motion.p
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, delay: 0.3 }}
+          className="text-[20px] w-[500px] text-white/90 mb-12 max-w-4xl mx-auto leading-relaxed backdrop-blur-sm bg-amber-600/40 p-3 rounded-2xl border border-amber-500/20 shadow-lg absolute top-40 left-20 text-left"
+        >
+          {t('subtitle')}
+        </motion.p>
+
+        {/* 右側裝飾方塊動畫 - 獨立控制 */}
+        <motion.div
+          initial={{ opacity: 0, x: 50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, delay: 0.5 }}
+          className="absolute top-[-100px] left-[105%] bg-amber-600 h-[300px] w-[200px]"
+        />
       </div>
     </section>
   );

@@ -38,7 +38,9 @@
       "Bash(chmod:*)",
       "Bash(pnpm update:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(grep:*)",
+      "Bash(gtimeout:*)"
     ],
     "deny": []
   }

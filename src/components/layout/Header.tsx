@@ -1,15 +1,18 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import Link from 'next/link';
 import { useTranslations, useLocale } from 'next-intl';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import { Canvas } from '@react-three/fiber';
+import EarthLogo from '@/components/3d/EarthLogo';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const navMenuButtonRef = useRef<HTMLDivElement>(null);
   const t = useTranslations('Navigation');
@@ -17,6 +20,11 @@ export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
   const { user, isAuthenticated, logout } = useAuth();
+
+  // 檢查是否在客戶端，避免 SSR 問題
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // 點擊外部關閉菜單
   useEffect(() => {
@@ -74,16 +82,12 @@ export default function Header() {
 
   return (
     <header
-      className={`sticky top-0 z-50 shadow-sm border-b border-white/20 overflow-hidden ${
-        isNavMenuOpen ? 'backdrop-blur-xl shadow-2xl' : ''
-      }`}
+      className={`sticky top-0 z-50 overflow-hidden border-b border-white/40 shadow-2xl relative`}
       style={{
         maxHeight: isNavMenuOpen ? '100vh' : '4rem',
         minHeight: '4rem',
-        background: isNavMenuOpen
-          ? 'rgba(255, 255, 255, 0.2)'
-          : 'rgba(255, 255, 255, 0.01)',
-        backdropFilter: isNavMenuOpen ? 'blur(4px)' : 'blur(1px)',
+        background: 'transparent',
+        backdropFilter: isNavMenuOpen ? 'blur(12px)' : 'blur(6px)',
         WebkitBackdropFilter: 'blur(4px)',
         transition:
           'max-height 0.8s ease-in-out, box-shadow 0.5s ease-out, backdrop-filter 0.5s ease-out, background 0.3s ease-out',
@@ -97,7 +101,75 @@ export default function Header() {
           {/* 固定的 Header 導航欄 - 始終保持在頂部 */}
           <div className="flex items-center justify-between h-16">
             <div className="flex-shrink-0">
-              <Link href="/" className="flex items-center">
+              <Link href="/" className="flex items-center space-x-3">
+                {/* 3D地球LOGO */}
+                {isClient && (
+                  <div
+                    className="relative flex items-center justify-center"
+                    style={{
+                      width: '48px',
+                      height: '48px',
+                    }}
+                  >
+                    <Canvas
+                      camera={{
+                        position: [0, 0, 3.5],
+                        fov: 60,
+                        near: 0.1,
+                        far: 100,
+                      }}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        background: 'transparent',
+                      }}
+                      gl={{
+                        antialias: true,
+                        alpha: true,
+                        preserveDrawingBuffer: true,
+                      }}
+                      dpr={[1, 2]}
+                    >
+                      <Suspense fallback={null}>
+                        {/* 主光源 - 模擬太陽光，來自右上方，強度提升 */}
+                        <directionalLight
+                          position={[4, 3, 2]}
+                          intensity={2.0}
+                          color="#FFF8DC"
+                          castShadow
+                        />
+
+                        {/* 環境光 - 提供基礎亮度，增強整體亮度 */}
+                        <ambientLight intensity={0.8} color="#f0f8ff" />
+
+                        {/* 補光 - 從左側提供強烈補光，增強立體感 */}
+                        <pointLight
+                          position={[-3, 2, 3]}
+                          intensity={1.0}
+                          color="#87CEEB"
+                          distance={20}
+                        />
+
+                        {/* 背光 - 從背後提供輪廓光，增強邊緣效果 */}
+                        <pointLight
+                          position={[0, 0, -4]}
+                          intensity={0.6}
+                          color="#ffffff"
+                          distance={15}
+                        />
+
+                        {/* 頂光 - 從上方照射，模擬自然光 */}
+                        <directionalLight
+                          position={[0, 5, 0]}
+                          intensity={0.8}
+                          color="#ffffff"
+                        />
+
+                        <EarthLogo />
+                      </Suspense>
+                    </Canvas>
+                  </div>
+                )}
                 <span className="text-xl font-bold text-gray-900">CMYZU</span>
               </Link>
             </div>
@@ -449,9 +521,7 @@ export default function Header() {
                 isNavMenuOpen ? 'opacity-100' : 'opacity-0'
               }`}
               style={{
-                background: isNavMenuOpen
-                  ? 'linear-gradient(to bottom, rgba(151, 151, 149, 0.15) 0%, transparent 50%, rgba(151, 151, 149, 0.20) 100%)'
-                  : 'transparent',
+                background: 'transparent',
                 transition: 'background 1s ease-out, opacity 1s ease-out',
               }}
             />
@@ -462,9 +532,7 @@ export default function Header() {
                 isNavMenuOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-50'
               }`}
               style={{
-                background: isNavMenuOpen
-                  ? 'radial-gradient(circle, rgba(151, 151, 149, 0.25) 0%, rgba(151, 151, 149, 0.15) 30%, rgba(151, 151, 149, 0.05) 60%, transparent 100%)'
-                  : 'transparent',
+                background: 'transparent',
                 transition: 'all 1.2s ease-out, background 1s ease-out',
                 transitionDelay: '200ms',
               }}
@@ -472,8 +540,8 @@ export default function Header() {
             <div
               className={`flex items-center justify-center w-full h-full relative z-10 ${
                 isNavMenuOpen
-                  ? 'transform translate-y-0 opacity-100 scale-100'
-                  : 'transform translate-y-16 opacity-0 scale-95'
+                  ? 'transform translate-y-0 scale-100'
+                  : 'transform translate-y-16  scale-95'
               }`}
               style={{
                 transition:
