@@ -1,10 +1,12 @@
 // CMYZU 學校官方網站首頁 - 現代建築風格設計
 import Hero from '@/components/layout/Hero';
 import StatsSection from '@/components/layout/StatsSection';
-import FeaturesSection from '@/components/layout/FeaturesSection';
+import MoreHighlightsSection from '@/components/layout/MoreHighlightsSection';
+import NewsletterSection from '@/components/layout/NewsletterSection';
+import TalentDevelopmentSection from '@/components/layout/TalentDevelopmentSection';
 import NewsSection from '@/components/layout/NewsSection';
-import ExploreSection from '@/components/layout/ExploreSection';
-import DepartmentsSection from '@/components/layout/DepartmentsSection';
+import FeaturedResourcesSection from '@/components/layout/FeaturedResourcesSection';
+import RankingSection from '@/components/layout/RankingSection';
 import { Metadata } from 'next';
 
 // SEO 優化的頁面元數據
@@ -23,7 +25,7 @@ export const metadata: Metadata = {
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen relative">
       {/* 結構化數據 Schema.org */}
       <script
         type="application/ld+json"
@@ -50,20 +52,46 @@ export default function HomePage() {
         }}
       />
 
-      {/* 主視覺區域 - 現代建築風格 Hero Section */}
-      <Hero />
+      {/* 固定背景圖片 - 響應式設計修復手機版爆版問題 */}
+      <div
+        className="fixed inset-0 z-0 
+                   bg-cover bg-center bg-no-repeat
+                   bg-local md:bg-fixed
+                   min-h-screen overflow-hidden"
+        style={{
+          backgroundImage: `url('/hero-building.webp')`,
+        }}
+      />
 
-      <div className="py-20 backdrop-blur-md bg-gray-500/80 border-gray-500/60 flex flex-col items-center justify-center gap-20 relative z-20">
-        {/* 最新消息 */}
-        <NewsSection />
-        {/* 探索元智管理學院 */}
-        <ExploreSection />
-        {/* 系所學程 */}
-        <DepartmentsSection />
-        {/* 統計數據展示 */}
-        <StatsSection />
-        {/* 學校特色介紹 */}
-        <FeaturesSection />
+      {/* 主視覺區域 - 現代建築風格 Hero Section */}
+      <div className="relative z-10">
+        <Hero />
+      </div>
+
+      {/* 內容區域 - 加上響應式容器 */}
+      <div className="relative z-20 py-20 backdrop-blur-md bg-gray-500/70">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center ">
+          {/* 統計數據展示 */}
+          <StatsSection />
+          {/* 最新消息輪播 */}
+          <NewsSection />
+        </div>
+
+        {/* 特色資源 */}
+        <FeaturedResourcesSection />
+
+        {/* 排名 */}
+        <RankingSection />
+
+        {/* 培養最國際化的商管專業人才 - 需要全寬度顯示 */}
+        <TalentDevelopmentSection />
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center gap-20">
+          {/* 更多的精采收錄 */}
+          <MoreHighlightsSection />
+          {/* 電子報專區 */}
+          <NewsletterSection />
+        </div>
       </div>
     </main>
   );

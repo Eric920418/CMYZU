@@ -21,12 +21,20 @@
     "scroll_down": "Scroll to Explore"
   },
   "Stats": {
-    "title": "Our Achievements",
-    "description": "For decades, we have been committed to providing quality education and cultivating countless outstanding talents",
+    "title": "Global Business Education Leader",
+    "description": "To help students connect with the international workplace, we actively build an international environment",
     "years": "Years of Excellence",
     "students": "Students Enrolled",
     "faculty": "Distinguished Faculty",
-    "employment": "Employment Rate"
+    "employment": "Employment Rate",
+    "international_students": "International Students",
+    "partner_schools": "Partner Schools",
+    "countries": "Countries",
+    "exchange_students": "Exchange Students",
+    "partner_universities": "Partner Universities",
+    "international_students_count": "International Students",
+    "exchange_students_count": "Exchange Students",
+    "dual_degree_students": "Dual Degree Students"
   },
   "Features": {
     "title": "Why Choose Us",
@@ -56,21 +64,24 @@
     "news_5_excerpt": "Campus cultural activities showcase students' creativity and artistic talents...",
     "news_6_title": "Taipei Youth Development Office X NTU D-School 'Crossing Borders: International Exchange and Internship Experience Sharing'",
     "news_6_excerpt": "Youth international exchange experience sharing, expanding global perspectives...",
-    "category_event": "Event",
-    "category_academic": "Academic",
-    "category_achievement": "Achievement",
+    "category_all": "All",
+    "category_admission": "Admissions",
+    "category_exchange": "Exchange & Dual Degree",
+    "category_internship": "Internship & Career",
+    "category_scholarship": "Scholarships",
+    "category_alumni": "Alumni",
     "read_more": "Read More",
     "view_all": "View All News"
   },
   "Explore": {
     "title": "Explore CMYZU Business School",
     "description": "Discover our school features, faculty excellence, and international educational environment",
-    "item_1_title": "School Overview",
-    "item_1_description": "CMYZU Business School is committed to cultivating management talents with international perspectives and innovative thinking, combining theory with practice to provide comprehensive management education.",
-    "item_2_title": "Faculty Excellence",
-    "item_2_description": "Outstanding faculty from top universities worldwide, with expertise covering all aspects of management, dedicated to academic research and educational innovation.",
-    "item_3_title": "International Exchange",
-    "item_3_description": "Partnerships with over 100 prestigious universities worldwide, offering students overseas exchange, dual degree and international internship opportunities.",
+    "item_1_title": "College Highlights",
+    "item_1_description": "Focusing on the latest developments and important achievements of the College of Management, including academic research breakthroughs, industry-academia collaboration results, and outstanding performances by faculty and students.",
+    "item_2_title": "Distinctive Courses",
+    "item_2_description": "Innovative practice-oriented course design that combines industrial internships, international exchanges, and interdisciplinary learning to cultivate students' practical abilities and global competitiveness.",
+    "item_3_title": "Exciting Activities",
+    "item_3_description": "Rich and diverse campus activities and academic lectures, including corporate visits, international symposiums, student competitions, and cultural exchanges.",
     "learn_more": "Learn More",
     "contact_us": "Contact Us"
   },
@@ -185,5 +196,38 @@
     "tip-1": "Password must be at least 6 characters long",
     "tip-2": "We recommend using a combination of uppercase, lowercase letters and numbers",
     "tip-3": "Change your password regularly to keep your account secure"
+  },
+  "MoreHighlights": {
+    "title": "More Exciting Highlights",
+    "description": "Follow our official social media channels to stay updated with the latest campus news and exciting moments.",
+    "view_more": "View More Highlights"
+  },
+  "TalentDevelopment": {
+    "title": "Cultivating the Most International Business Professionals",
+    "description": "We are committed to cultivating business professionals with global vision, practical capabilities, and innovative spirit. Through an international teaching environment and rich internship opportunities, we build professional competencies for students to succeed on the world stage.",
+    "success_stories_title": "Alumni Success Stories",
+    "success_stories_description": "Our graduates shine in top companies around the world, and their success proves the excellence of our educational quality.",
+    "apply_now": "Apply Now",
+    "learn_more": "Learn More"
+  },
+  "Newsletter": {
+    "title": "Newsletter Section",
+    "description": "Subscribe to our newsletter to get the latest school news, event information, and important announcements first.",
+    "placeholder": "Enter your email address",
+    "subscribe": "Subscribe Now",
+    "success": "Successfully subscribed! Thank you for your support",
+    "privacy": "We respect your privacy and will never share your email address with third parties. You can unsubscribe at any time.",
+    "or": "or",
+    "annualReport": {
+      "title": "Annual Report Downloads",
+      "description": "Download our latest annual reports to learn about the college's achievements and future plans",
+      "download2023": "2023 Annual Report",
+      "download2022": "2022 Annual Report",
+      "note": "Files are in PDF format. Adobe Reader is recommended for viewing"
+    }
+  },
+  "FeaturedResources": {
+    "title": "Featured Resources",
+    "description": "Explore our featured resources and services to provide comprehensive support for your learning and development."
   }
 }

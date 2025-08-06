@@ -19,12 +19,12 @@ const animatedElements = new Set<HTMLElement>();
  */
 export function useCountAnimation({
   end,
-  duration = 1500,
+  duration = 2500,
   start = 0,
   decimals = 0,
   delay = 0,
 }: UseCountAnimationOptions) {
-  const [displayValue, setDisplayValue] = useState(end);
+  const [displayValue, setDisplayValue] = useState(start);
   const [hasAnimated, setHasAnimated] = useState(false);
 
   const elementRef = useRef<HTMLDivElement>(null);
@@ -36,8 +36,6 @@ export function useCountAnimation({
       console.log('🚫 元素已動畫過或不存在，跳過動畫');
       return;
     }
-
-    console.log('🎬 開始動畫，目標值:', end);
 
     // 立即將元素加入已動畫集合
     animatedElements.add(element);
@@ -58,7 +56,6 @@ export function useCountAnimation({
       } else {
         setDisplayValue(end);
         setHasAnimated(true);
-        console.log('✅ 動畫完成，目標值:', end);
       }
     };
 

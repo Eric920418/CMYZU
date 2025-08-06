@@ -21,12 +21,20 @@
     "scroll_down": "向下探索"
   },
   "Stats": {
-    "title": "最國際化的商管學院",
-    "description": "數十年來，我們致力於提供優質教育，培養無數優秀人才",
+    "title": "國際化商管教育領航者",
+    "description": "為幫助學生銜接國際職場，我們積極建構國際化環境",
     "years": "年辦學歷史",
     "students": "在學學生",
     "faculty": "優秀教師",
-    "employment": "就業率"
+    "employment": "就業率",
+    "international_students": "國際學生比例",
+    "partner_schools": "海外合作學校",
+    "countries": "遍佈國家",
+    "exchange_students": "國外交流學生",
+    "partner_universities": "合作大學數",
+    "international_students_count": "國際學生數",
+    "exchange_students_count": "交換人數",
+    "dual_degree_students": "雙聯人數"
   },
   "Features": {
     "title": "為什麼選擇我們",
@@ -56,21 +64,24 @@
     "news_5_excerpt": "校園文化活動展現學生創意與藝術才華...",
     "news_6_title": "臺北市政府青年局X臺大D-School《跨越國界：國際交流與實習經驗分享》",
     "news_6_excerpt": "青年國際交流經驗分享，拓展全球視野...",
-    "category_event": "活動",
-    "category_academic": "學術",
-    "category_achievement": "榮譽",
+    "category_all": "全部",
+    "category_admission": "招生資訊",
+    "category_exchange": "交換雙聯資訊",
+    "category_internship": "實習就業資訊",
+    "category_scholarship": "獎學金資訊",
+    "category_alumni": "校友資訊",
     "read_more": "閱讀更多",
     "view_all": "查看所有消息"
   },
   "Explore": {
     "title": "探索元智管理學院",
     "description": "深入了解我們的學院特色、師資陣容與國際化教育環境",
-    "item_1_title": "學院簡介",
-    "item_1_description": "元智管理學院致力於培養具備國際視野與創新思維的管理人才，結合理論與實務，為學生提供全方位的管理教育。",
-    "item_2_title": "師資陣容",
-    "item_2_description": "擁有來自國內外頂尖大學的優秀師資，專業領域涵蓋管理學各個面向，致力於學術研究與教學創新。",
-    "item_3_title": "國際交流",
-    "item_3_description": "與全球超過100所知名大學建立合作關係，提供學生海外交換、雙學位及國際實習機會。",
+    "item_1_title": "管院焦點",
+    "item_1_description": "聚焦管理學院最新發展與重要成果，包含學術研究突破、產學合作成果、師生榮譽表現等核心亮點。",
+    "item_2_title": "特色課程",
+    "item_2_description": "創新實務導向的課程設計，結合產業實習、國際交流與跨領域學習，培養學生實戰能力與全球競爭力。",
+    "item_3_title": "精彩活動",
+    "item_3_description": "豐富多元的校園活動與學術講座，包含企業參訪、國際研討會、學生競賽與文化交流等精彩內容。",
     "learn_more": "了解更多",
     "contact_us": "聯絡我們"
   },
@@ -185,5 +196,38 @@
     "tip-1": "密碼至少需要 6 個字元",
     "tip-2": "建議使用大小寫字母、數字的組合",
     "tip-3": "定期更換密碼以確保帳號安全"
+  },
+  "MoreHighlights": {
+    "title": "更多的精采收錄",
+    "description": "追蹤我們的官方社群媒體，即時掌握校園最新動態與精彩時刻。",
+    "view_more": "查看更多精采內容"
+  },
+  "TalentDevelopment": {
+    "title": "培養最國際化的商管專業人才",
+    "description": "我們致力於培養具備全球視野、實務能力與創新精神的商管專業人才，透過國際化的教學環境與豐富的實習機會，為學生打造通往世界舞台的專業能力。",
+    "success_stories_title": "校友成功故事",
+    "success_stories_description": "我們的畢業生在全球各地的頂尖企業中發光發熱，他們的成功證明了我們教育品質的卓越。",
+    "apply_now": "立即申請",
+    "learn_more": "了解更多"
+  },
+  "Newsletter": {
+    "title": "電子報專區",
+    "description": "訂閱我們的電子報，第一時間獲得學校最新消息、活動資訊與重要公告。",
+    "placeholder": "請輸入您的電子郵件",
+    "subscribe": "立即訂閱",
+    "success": "訂閱成功！感謝您的支持",
+    "privacy": "我們尊重您的隱私，絕不會將您的電子郵件地址分享給第三方。您可以隨時取消訂閱。",
+    "or": "或",
+    "annualReport": {
+      "title": "年報下載",
+      "description": "下載最新年報，了解學院發展成果與未來規劃",
+      "download2023": "2023年報",
+      "download2022": "2022年報",
+      "note": "檔案為PDF格式，建議使用Adobe Reader開啟"
+    }
+  },
+  "FeaturedResources": {
+    "title": "特色資源",
+    "description": "探索我們的特色資源與服務，為您的學習與發展提供全方位支持。"
   }
 }

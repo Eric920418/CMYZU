@@ -108,18 +108,14 @@ export default async function LocaleLayout({
       lang={locale}
       className={`${notoSans.variable} ${notoSerif.variable}`}
     >
-      <body
-        className="bg-cover bg-center bg-no-repeat bg-fixed"
-        style={{
-          backgroundImage: `url('/hero-building.webp')`,
-          backgroundAttachment: 'fixed',
-        }}
-      >
+      <body className="min-h-screen overflow-x-hidden">
         <NextIntlClientProvider locale={locale} messages={messages}>
           <AuthProvider>
             <Header />
-            <main className="min-h-screen">{children}</main>
-            <Footer />
+            <main className="min-h-screen pt-16">{children}</main>
+            <div className="relative z-30">
+              <Footer />
+            </div>
           </AuthProvider>
         </NextIntlClientProvider>
       </body>

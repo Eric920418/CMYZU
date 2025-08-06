@@ -14,41 +14,64 @@ export default function Hero() {
         <div className="h-full w-full bg-[linear-gradient(90deg,transparent_0%,rgba(255,255,255,0.1)_50%,transparent_100%)] bg-[length:40px_100%] animate-pulse" />
       </div>
 
-      <div className="relative z-10 container text-center">
-        {/* 主標題動畫 */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-        >
-          {/* 主標題 - 建築感字體設計 */}
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-8 leading-tight relative">
-            <span className="block text-white drop-shadow-lg absolute bottom-10 left-0">
+      <div className="relative z-10 h-full w-full flex items-center">
+        {/* 左側主標題區域 - 非對稱布局 */}
+        <div className="w-full lg:w-2/3 px-4 sm:px-6 lg:px-8 lg:pl-16">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-left"
+          >
+            {/* YZU 小標 - 左上角定位 */}
+            <motion.span
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="inline-block text-white drop-shadow-lg text-lg md:text-2xl lg:text-3xl mb-4 font-light tracking-widest"
+            >
               YZU
-            </span>
-            <span className="text-[80px] block text-transparent bg-clip-text bg-gradient-to-r from-amber-600 via-amber-500 to-white drop-shadow-lg absolute bottom-[-30px] left-0">
-              {t('title_main')}
-            </span>
-          </h1>
-        </motion.div>
+            </motion.span>
 
-        {/* 副標題動畫 - 獨立控制 */}
-        <motion.p
-          initial={{ opacity: 0, x: -50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8, delay: 0.3 }}
-          className="text-[20px] w-[500px] text-white/90 mb-12 max-w-4xl mx-auto leading-relaxed backdrop-blur-sm bg-amber-600/40 p-3 rounded-2xl border border-amber-500/20 shadow-lg absolute top-40 left-20 text-left"
-        >
-          {t('subtitle')}
-        </motion.p>
+            {/* 主標題 - 錯位排列 */}
+            <h1 className="relative">
+              <motion.span
+                initial={{ opacity: 0, x: -50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, delay: 0.4 }}
+                className="block text-4xl md:text-6xl lg:text-[80px] xl:text-[100px] font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-600 via-amber-500 to-white drop-shadow-lg leading-none break-words max-w-full"
+              >
+                {t('title_main')}
+              </motion.span>
+            </h1>
 
-        {/* 右側裝飾方塊動畫 - 獨立控制 */}
+            {/* 右側副標題區域 - 垂直居中偏移 */}
+            <div className="hidden lg:block w-full max-w-[600px] pr-16">
+              <motion.div
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.6 }}
+                className="transform translate-y-4"
+              >
+                <p className="text-lg xl:text-xl text-white/90 leading-relaxed backdrop-blur-sm bg-amber-600/30 p-6 rounded-xl border border-amber-500/20 shadow-xl">
+                  {t('subtitle')}
+                </p>
+              </motion.div>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* 手機版副標題 - 底部居中 */}
         <motion.div
-          initial={{ opacity: 0, x: 50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8, delay: 0.5 }}
-          className="absolute top-[-100px] left-[105%] bg-amber-600 h-[300px] w-[200px]"
-        />
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.7 }}
+          className="lg:hidden absolute bottom-20 left-4 right-4"
+        >
+          <p className="text-base md:text-lg text-white/90 text-center leading-relaxed backdrop-blur-sm bg-amber-600/40 p-4 rounded-2xl border border-amber-500/20 shadow-lg mx-auto max-w-md">
+            {t('subtitle')}
+          </p>
+        </motion.div>
       </div>
     </section>
   );
