@@ -390,7 +390,6 @@ export function useAlumniData() {
             '培養新世代金融人才',
           ],
           authorId: 'system',
-          imageUrl: '/4.webp',
           stats: [
             { label: '服務年資', value: '25年', icon: '👔' },
             { label: '管理資產', value: '2.8兆', icon: '💰' },
