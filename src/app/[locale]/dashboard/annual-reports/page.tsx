@@ -546,6 +546,9 @@ function CreateReportModal({
         fileUrl: formData.fileUrl,
         fileName: formData.fileName,
         fileSize: formData.fileSize ? parseInt(formData.fileSize) : undefined,
+        authorId: 'system',
+        publishedAt: new Date(),
+        isActive: true,
       });
 
       if (response.success) {

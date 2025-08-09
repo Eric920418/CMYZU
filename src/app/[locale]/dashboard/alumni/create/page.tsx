@@ -97,6 +97,7 @@ export default function CreateAlumniPage() {
         imageUrl: formData.imageUrl || undefined,
         achievements,
         isActive: isDraft ? false : formData.isActive,
+        authorId: user?.id || 'system',
       });
 
       if (response.success) {

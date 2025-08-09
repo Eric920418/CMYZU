@@ -13,7 +13,8 @@ let newsDataStore: News[] = [
       '這是一個測試新聞的完整內容。在實際使用中，您可以透過後台管理介面來管理所有新聞內容，包括新增、編輯、刪除以及控制發佈狀態。',
     date: new Date(),
     image: '/4.webp',
-    isPublished: true,
+    imageUrl: '/4.webp',
+    published: true,
     order: 1,
     views: 0,
     createdAt: new Date(),
@@ -76,7 +77,7 @@ export const newsStorage = {
         const isPublished = action === 'publish';
         newsDataStore.forEach((news) => {
           if (ids.includes(news.id)) {
-            news.isPublished = isPublished;
+            news.published = isPublished;
             news.updatedAt = new Date();
           }
         });
@@ -116,8 +117,8 @@ export const newsStorage = {
   getStats() {
     return {
       total: newsDataStore.length,
-      published: newsDataStore.filter((n) => n.isPublished).length,
-      unpublished: newsDataStore.filter((n) => !n.isPublished).length,
+      published: newsDataStore.filter((n) => n.published).length,
+      unpublished: newsDataStore.filter((n) => !n.published).length,
       totalViews: newsDataStore.reduce((sum, n) => sum + n.views, 0),
     };
   },

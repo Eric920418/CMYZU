@@ -52,7 +52,7 @@ export default function EditNewsPage() {
             excerpt: news.excerpt,
             content: news.content,
             image: imageValue,
-            isPublished: news.isPublished,
+            published: news.published,
             date: formatDate(news.date),
           });
           // ImageUpload 組件會自動同步預覽

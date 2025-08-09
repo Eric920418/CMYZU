@@ -117,11 +117,14 @@ export default function CreateNewsPage() {
     try {
       // 使用真實的 API 創建草稿（isPublished = false）
       const response = await dashboardAPI.news.create({
-        ...formData,
+        title: formData.title,
+        excerpt: formData.excerpt,
+        content: formData.content,
+        imageUrl: formData.image || '',
         date: new Date(),
         order: 0,
         views: 0,
-        isPublished: false, // 強制設為草稿
+        published: false, // 強制設為草稿
       });
 
       if (response.success && response.data) {
