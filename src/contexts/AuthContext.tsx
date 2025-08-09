@@ -168,12 +168,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       if (token && userData) {
         try {
           const user = JSON.parse(userData);
+          // 直接設定認證狀態，不要立即驗證API
           setAuthData(user, token);
 
-          // 靜默驗證 token 是否仍然有效，失敗時不登出
-          await refreshUser(true);
+          // 可選：在背景靜默驗證，但不影響登入狀態
+          // refreshUser(true).catch(() => {
+          //   console.warn('Token validation failed, but keeping user logged in');
+          // });
         } catch (error) {
-          // 如果資料無效，清除儲存
+          // 如果JSON解析失敗，清除無效資料
+          console.error('Invalid user data in localStorage:', error);
           setAuthData(null, null);
         }
       } else {

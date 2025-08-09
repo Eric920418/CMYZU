@@ -40,7 +40,10 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(grep:*)",
-      "Bash(gtimeout:*)"
+      "Bash(gtimeout:*)",
+      "Bash(pnpm db:seed:*)",
+      "Bash(node:*)",
+      "Bash(pnpm tsx:*)"
     ],
     "deny": []
   }

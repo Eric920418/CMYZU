@@ -1,8 +1,7 @@
 import axios from 'axios';
 
-// API 基礎 URL
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
+// API 基礎 URL - 統一使用 Next.js API Routes
+const API_BASE_URL = '/api';
 
 // 建立 axios 實例
 export const apiClient = axios.create({

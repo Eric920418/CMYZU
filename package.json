@@ -9,31 +9,41 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "prepare": "husky",
-    "start:all": "./start.sh",
-    "dev:frontend": "next dev",
-    "dev:backend": "cd backend && PORT=4000 pnpm dev"
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "db:studio": "prisma studio",
+    "db:seed": "tsx src/lib/seed.ts"
   },
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
     "@hookform/resolvers": "^3.6.0",
+    "@prisma/client": "^6.13.0",
     "@react-three/drei": "^10.6.1",
     "@react-three/fiber": "^8.18.0",
     "@types/three": "^0.178.1",
+    "@types/uuid": "^10.0.0",
     "axios": "^1.11.0",
+    "bcryptjs": "^3.0.2",
     "clsx": "^2.1.1",
     "framer-motion": "^11.2.6",
     "highcharts": "^12.3.0",
     "highcharts-react-official": "^3.2.2",
+    "jsonwebtoken": "^9.0.2",
     "next": "14.2.3",
     "next-intl": "^4.3.4",
+    "prisma": "^6.13.0",
     "react": "^18",
     "react-dom": "^18",
     "react-hook-form": "^7.52.0",
+    "react-hot-toast": "^2.5.2",
     "react-simple-maps": "^3.0.0",
     "sharp": "^0.33.4",
     "swr": "^2.3.4",
     "tailwind-merge": "^2.3.0",
     "three": "^0.179.1",
-    "zod": "^3.23.8"
+    "uuid": "^11.1.0",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.3.0",
@@ -54,6 +64,7 @@
     "postcss": "^8.5.6",
     "prettier": "^3.3.0",
     "tailwindcss": "^4.1.11",
+    "tsx": "^4.20.3",
     "typescript": "^5.5.4"
   },
   "pnpm": {

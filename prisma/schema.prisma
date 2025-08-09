@@ -1,0 +1,159 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 用戶模型
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(TEACHER)
+  active    Boolean  @default(true)
+  image     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // 關聯
+  news          News[]
+  liveUpdates   LiveUpdate[]
+  alumni        Alumni[]
+  annualReports AnnualReport[]
+
+  @@map("users")
+}
+
+// 新聞模型
+model News {
+  id          String   @id @default(cuid())
+  title       String
+  content     String
+  excerpt     String?
+  imageUrl    String?
+  published   Boolean  @default(false)
+  featured    Boolean  @default(false)
+  views       Int      @default(0)
+  authorId    String
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // 關聯
+  author User @relation(fields: [authorId], references: [id])
+
+  @@map("news")
+}
+
+// 即時動態模型
+model LiveUpdate {
+  id        String           @id @default(cuid())
+  title     String
+  content   String
+  priority  LiveUpdatePriority @default(MEDIUM)
+  published Boolean          @default(false)
+  tags      String[]         @default([])
+  authorId  String
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  // 關聯
+  author User @relation(fields: [authorId], references: [id])
+
+  @@map("live_updates")
+}
+
+// 特色資源模型 (現有功能保留)
+model FeaturedResource {
+  id          String  @id @default(cuid())
+  title       String
+  description String
+  imageUrl    String?
+  linkUrl     String?
+  category    String
+  bgColor     String  @default("bg-gradient-to-br from-blue-500 to-purple-600")
+  order       Int     @default(0)
+  enabled     Boolean @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("featured_resources")
+}
+
+// 傑出校友模型
+model Alumni {
+  id           String   @id @default(cuid())
+  name         String
+  position     String
+  description  String
+  imageUrl     String?
+  achievements String[] @default([])
+  isActive     Boolean  @default(true)
+  authorId     String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // 關聯
+  author User @relation(fields: [authorId], references: [id])
+
+  @@map("alumni")
+}
+
+// 主視覺內容模型
+model HeroContent {
+  id              String  @id @default(cuid())
+  locale          String  // 語言 ('zh' | 'en')
+  titlePrefix     String  @default("YZU") // YZU 小標
+  titleMain       String  // 主標題
+  subtitle        String  // 副標題
+  backgroundImage String? // 背景圖片 URL
+  gradientFrom    String  @default("amber-600") // 漸層起始色
+  gradientTo      String  @default("white") // 漸層結束色
+  glassEffect     Boolean @default(true) // 是否顯示玻璃幕牆效果
+  isActive        Boolean @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([locale]) // 每種語言只能有一個活動的主視覺
+  @@map("hero_content")
+}
+
+// 年報管理模型
+model AnnualReport {
+  id          String   @id @default(cuid())
+  year        Int      // 年度 (e.g., 2023)
+  title       String   // 顯示標題 (e.g., "2023年報")
+  description String?  // 描述文字
+  fileUrl     String   // 年報檔案 URL
+  fileName    String   // 原始檔名
+  fileSize    Int?     // 檔案大小 (bytes)
+  isActive    Boolean  @default(true) // 是否啟用
+  publishedAt DateTime @default(now()) // 發布時間
+  authorId    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // 關聯
+  author User @relation(fields: [authorId], references: [id])
+
+  @@unique([year]) // 每年只能有一份年報
+  @@map("annual_reports")
+}
+
+// 列舉類型
+enum Role {
+  ADMIN
+  TEACHER
+  STUDENT
+}
+
+enum LiveUpdatePriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}

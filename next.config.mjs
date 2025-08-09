@@ -10,6 +10,14 @@ const nextConfig = {
   images: {
     domains: ['localhost', 'upload.wikimedia.org'],
     formats: ['image/webp', 'image/avif'],
+    remotePatterns: [
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '3000',
+        pathname: '/api/images/**',
+      },
+    ],
   },
   async headers() {
     return [

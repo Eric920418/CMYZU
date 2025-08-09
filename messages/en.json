@@ -154,7 +154,8 @@
     "password": "Password",
     "login-button": "Login",
     "logging-in": "Logging in...",
-    "help-text": "If you forgot your password, please contact the administrator"
+    "help-text": "If you forgot your password, please contact the administrator",
+    "back-to-home": "Back to Home"
   },
   "DashboardPage": {
     "title": "System Dashboard",

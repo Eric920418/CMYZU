@@ -638,7 +638,7 @@ function DetailModal({
         exit={{ opacity: 0, scale: 0.8, y: 50 }}
         transition={{ duration: 0.3, ease: 'easeOut' }}
         className="relative max-w-4xl w-full max-h-[90vh] overflow-y-auto bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl"
-        onClick={(e) => e.stopPropagation()}
+        onClick={(e: React.MouseEvent) => e.stopPropagation()}
       >
         {/* 關閉按鈕 */}
         <button

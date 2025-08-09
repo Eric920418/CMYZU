@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
+import { useAnnualReports } from '@/hooks/useAnnualReports';
 
 // 電子報專區 - 用戶電子郵件訂閱功能
 export default function NewsletterSection() {
@@ -11,6 +12,13 @@ export default function NewsletterSection() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [error, setError] = useState('');
+
+  // 載入年報資料
+  const {
+    reports,
+    isLoading: reportsLoading,
+    error: reportsError,
+  } = useAnnualReports();
 
   // 處理表單提交
   const handleSubmit = async (e: React.FormEvent) => {
@@ -294,65 +302,60 @@ export default function NewsletterSection() {
                   })}
                 </p>
 
-                {/* 年報下載按鈕 */}
+                {/* 年報下載按鈕 - 動態載入 */}
                 <div className="flex flex-col sm:flex-row gap-2 justify-center items-center">
-                  {/* 2023 年報 */}
-                  <a
-                    href="/files/annual-report-2023.pdf"
-                    download="CMYZU-Annual-Report-2023.pdf"
-                    className="group px-3 py-2 bg-gradient-to-r from-blue-500/80 to-indigo-600/80 hover:from-blue-500 hover:to-indigo-600 text-white font-medium rounded-lg transition-all duration-300 transform hover:scale-105 shadow-sm text-xs flex items-center gap-1.5 w-full sm:w-auto justify-center"
-                    onClick={() => {
-                      console.log('Downloading 2023 Annual Report');
-                    }}
-                  >
-                    <svg
-                      className="w-3.5 h-3.5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                      />
-                    </svg>
-                    <span>
-                      {t('annualReport.download2023', {
-                        defaultValue: '2023年報',
-                      })}
-                    </span>
-                  </a>
+                  {reportsLoading ? (
+                    <div className="flex items-center gap-2 text-white/70 text-sm">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white/70"></div>
+                      載入年報中...
+                    </div>
+                  ) : reportsError ? (
+                    <div className="text-red-300 text-sm">載入年報失敗</div>
+                  ) : reports.length === 0 ? (
+                    <div className="text-white/70 text-sm">
+                      暫無可下載的年報
+                    </div>
+                  ) : (
+                    reports.map((report, index) => {
+                      // 根據索引選擇不同的漸層顏色
+                      const gradientClasses = [
+                        'from-blue-500/80 to-indigo-600/80 hover:from-blue-500 hover:to-indigo-600',
+                        'from-indigo-500/80 to-purple-600/80 hover:from-indigo-500 hover:to-purple-600',
+                        'from-purple-500/80 to-pink-600/80 hover:from-purple-500 hover:to-pink-600',
+                        'from-pink-500/80 to-red-600/80 hover:from-pink-500 hover:to-red-600',
+                        'from-green-500/80 to-teal-600/80 hover:from-green-500 hover:to-teal-600',
+                      ];
 
-                  {/* 2022 年報 */}
-                  <a
-                    href="/files/annual-report-2022.pdf"
-                    download="CMYZU-Annual-Report-2022.pdf"
-                    className="group px-3 py-2 bg-gradient-to-r from-indigo-500/80 to-purple-600/80 hover:from-indigo-500 hover:to-purple-600 text-white font-medium rounded-lg transition-all duration-300 transform hover:scale-105 shadow-sm text-xs flex items-center gap-1.5 w-full sm:w-auto justify-center"
-                    onClick={() => {
-                      console.log('Downloading 2022 Annual Report');
-                    }}
-                  >
-                    <svg
-                      className="w-3.5 h-3.5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                      />
-                    </svg>
-                    <span>
-                      {t('annualReport.download2022', {
-                        defaultValue: '2022年報',
-                      })}
-                    </span>
-                  </a>
+                      return (
+                        <a
+                          key={report.id}
+                          href={report.fileUrl}
+                          download={report.fileName}
+                          className={`group px-3 py-2 bg-gradient-to-r ${
+                            gradientClasses[index % gradientClasses.length]
+                          } text-white font-medium rounded-lg transition-all duration-300 transform hover:scale-105 shadow-sm text-xs flex items-center gap-1.5 w-full sm:w-auto justify-center`}
+                          onClick={() => {
+                            console.log(`Downloading ${report.title}`);
+                          }}
+                        >
+                          <svg
+                            className="w-3.5 h-3.5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                            />
+                          </svg>
+                          <span>{report.title}</span>
+                        </a>
+                      );
+                    })
+                  )}
                 </div>
               </motion.div>
             </div>

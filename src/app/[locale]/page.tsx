@@ -1,10 +1,12 @@
 // CMYZU 學校官方網站首頁 - 現代建築風格設計
 import Hero from '@/components/layout/Hero';
+import DynamicBackground from '@/components/layout/DynamicBackground';
 import StatsSection from '@/components/layout/StatsSection';
 import MoreHighlightsSection from '@/components/layout/MoreHighlightsSection';
 import NewsletterSection from '@/components/layout/NewsletterSection';
 import TalentDevelopmentSection from '@/components/layout/TalentDevelopmentSection';
 import NewsSection from '@/components/layout/NewsSection';
+import LiveUpdatesSection from '@/components/layout/LiveUpdatesSection';
 import FeaturedResourcesSection from '@/components/layout/FeaturedResourcesSection';
 import RankingSection from '@/components/layout/RankingSection';
 import { Metadata } from 'next';
@@ -52,16 +54,8 @@ export default function HomePage() {
         }}
       />
 
-      {/* 固定背景圖片 - 響應式設計修復手機版爆版問題 */}
-      <div
-        className="fixed inset-0 z-0 
-                   bg-cover bg-center bg-no-repeat
-                   bg-local md:bg-fixed
-                   min-h-screen overflow-hidden"
-        style={{
-          backgroundImage: `url('/hero-building.webp')`,
-        }}
-      />
+      {/* 動態背景圖片 - 從後台管理載入 */}
+      <DynamicBackground />
 
       {/* 主視覺區域 - 現代建築風格 Hero Section */}
       <div className="relative z-10">
@@ -75,6 +69,10 @@ export default function HomePage() {
           <StatsSection />
           {/* 最新消息輪播 */}
           <NewsSection />
+        </div>
+        <div className="w-[80%] mx-auto px-1 sm:px-2 lg:px-4 mt-0 md:mt-[-5%]">
+          {/* 即時動態 */}
+          <LiveUpdatesSection />
         </div>
 
         {/* 特色資源 */}

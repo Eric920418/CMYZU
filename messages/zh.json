@@ -154,7 +154,8 @@
     "password": "密碼",
     "login-button": "登錄",
     "logging-in": "登錄中...",
-    "help-text": "如果您忘記密碼，請聯繫管理員"
+    "help-text": "如果您忘記密碼，請聯繫管理員",
+    "back-to-home": "返回主畫面"
   },
   "DashboardPage": {
     "title": "系統儀表板",
@@ -176,6 +177,8 @@
     "system-info": "系統資訊",
     "user-management": "用戶管理",
     "user-management-desc": "管理系統用戶",
+    "admin-tools-desc": "系統管理工具",
+    "system-settings": "系統設定",
     "coming-soon": "即將推出"
   },
   "ChangePasswordPage": {

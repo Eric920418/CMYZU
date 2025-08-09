@@ -6,6 +6,7 @@ import '../globals.css';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { AuthProvider } from '@/contexts/AuthContext';
+import ClientLayoutWrapper from '@/components/ClientLayoutWrapper';
 
 const notoSans = Noto_Sans({
   subsets: ['latin'],
@@ -111,11 +112,16 @@ export default async function LocaleLayout({
       <body className="min-h-screen overflow-x-hidden">
         <NextIntlClientProvider locale={locale} messages={messages}>
           <AuthProvider>
-            <Header />
-            <main className="min-h-screen pt-16">{children}</main>
-            <div className="relative z-30">
-              <Footer />
-            </div>
+            <ClientLayoutWrapper
+              header={<Header />}
+              footer={
+                <div className="relative z-30">
+                  <Footer />
+                </div>
+              }
+            >
+              {children}
+            </ClientLayoutWrapper>
           </AuthProvider>
         </NextIntlClientProvider>
       </body>

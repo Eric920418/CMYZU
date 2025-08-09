@@ -3,74 +3,26 @@
 import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useScrollState } from '@/hooks/useScrollState';
+import { useFeaturedResources } from '@/hooks/useFeaturedResources';
 
 // 特色資源區塊 - 垂直排列的卡片展示
 export default function FeaturedResourcesSection() {
   const t = useTranslations('FeaturedResources');
+  const { resources, loading, error } = useFeaturedResources();
   const [selectedResource, setSelectedResource] = useState<
     (typeof resources)[0] | null
   >(null);
   const isScrolling = useScrollState();
+  const [hasAnimated, setHasAnimated] = useState(false);
 
-  // 特色資源數據 - 信用卡樣式
-  const resources = [
-    {
-      id: 1,
-      title: '新戶申辦享限定首刷好禮！',
-      description: '星光箱伴 邁向全球數位新戶體驗',
-      image: '/4.webp',
-      category: '新戶專區',
-      backgroundColor: 'bg-gradient-to-br from-green-500 to-green-700',
-      textColor: 'text-white',
-    },
-    {
-      id: 2,
-      title: '百貨購物 星級回饋',
-      description: '刷卡分期0%利率 滿額享好禮',
-      image: '/Image.webp',
-      category: '購物優惠',
-      backgroundColor: 'bg-gradient-to-br from-orange-400 to-orange-600',
-      textColor: 'text-white',
-    },
-    {
-      id: 3,
-      title: '億萬星空任務',
-      description: '月月刷卡來追星 回饋狂飆NT$9,000 再抽紐西蘭頂級觀星之旅',
-      image: '/er.webp',
-      category: '星空任務',
-      backgroundColor: 'bg-gradient-to-br from-blue-600 to-purple-800',
-      textColor: 'text-white',
-    },
-    {
-      id: 4,
-      title: '揪好友辦星展卡',
-      description: '解鎖星級寶箱',
-      image: '/4.webp',
-      category: '推薦好友',
-      backgroundColor: 'bg-gradient-to-br from-teal-400 to-green-500',
-      textColor: 'text-white',
-    },
-    {
-      id: 5,
-      title: '聚餐用星刷',
-      description: '天天最高享12%回饋',
-      image: '/Image.webp',
-      category: '餐飲回饋',
-      backgroundColor: 'bg-gradient-to-br from-red-500 to-red-700',
-      textColor: 'text-white',
-    },
-    {
-      id: 6,
-      title: '網路購物刷星展卡',
-      description: '滿額並登錄享優惠',
-      image: '/er.webp',
-      category: '網購優惠',
-      backgroundColor: 'bg-gradient-to-br from-gray-400 to-gray-600',
-      textColor: 'text-white',
-    },
-  ];
+  // 當資源載入完成後，標記動畫已執行
+  useEffect(() => {
+    if (resources.length > 0 && !hasAnimated) {
+      setHasAnimated(true);
+    }
+  }, [resources.length, hasAnimated]);
 
   // 資源詳情彈窗
   const openDetail = (resource: (typeof resources)[0]) => {
@@ -81,7 +33,7 @@ export default function FeaturedResourcesSection() {
     setSelectedResource(null);
   };
 
-  // 資源卡片元件 - 3x2 網格樣式
+  // 資源卡片元件 - 簡單淡入動畫
   const ResourceCard = ({
     resource,
     index,
@@ -90,11 +42,24 @@ export default function FeaturedResourcesSection() {
     index: number;
   }) => (
     <motion.div
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay: index * 0.1 }}
-      viewport={{ once: true }}
-      whileHover={!isScrolling ? { y: -5 } : {}}
+      initial={hasAnimated ? { opacity: 1 } : { opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={
+        hasAnimated
+          ? { duration: 0 }
+          : {
+              duration: 0.3,
+              delay: index * 0.1,
+            }
+      }
+      whileHover={
+        !isScrolling
+          ? {
+              y: -3,
+              transition: { duration: 0.2 },
+            }
+          : {}
+      }
       className="group cursor-pointer"
       onClick={() => openDetail(resource)}
     >
@@ -163,45 +128,46 @@ export default function FeaturedResourcesSection() {
   return (
     <section className="relative py-20">
       {/* 標題區域 */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        viewport={{ once: true }}
-        className="text-center mb-16"
-      >
+      <div className="text-center mb-16">
         <div className="container mx-auto px-4">
-          <motion.h2
-            className="text-3xl sm:text-4xl md:text-5xl font-bold text-primary-700 mb-6"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            viewport={{ once: true }}
-          >
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-primary-700 mb-6">
             {t('title', { defaultValue: '特色資源' })}
-          </motion.h2>
-          <motion.p
-            className="text-base sm:text-lg text-primary-100 max-w-3xl mx-auto leading-relaxed"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            viewport={{ once: true }}
-          >
+          </h2>
+          <p className="text-base sm:text-lg text-primary-100 max-w-3xl mx-auto leading-relaxed">
             {t('description', {
               defaultValue:
                 '探索我們的特色資源與服務，為您的學習與發展提供全方位支持。',
             })}
-          </motion.p>
+          </p>
         </div>
-      </motion.div>
+      </div>
 
       {/* 資源卡片網格 - 3x2 佈局 */}
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-          {resources.map((resource, index) => (
-            <ResourceCard key={resource.id} resource={resource} index={index} />
-          ))}
-        </div>
+        {loading ? (
+          <div className="flex justify-center items-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+          </div>
+        ) : error ? (
+          <div className="text-center py-12">
+            <div className="text-red-500 mb-4">載入特色資源時發生錯誤</div>
+            <p className="text-gray-500">{error}</p>
+          </div>
+        ) : resources.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-gray-500">目前沒有特色資源可顯示</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+            {resources.map((resource, index) => (
+              <ResourceCard
+                key={`resource-${resource.id}`}
+                resource={resource}
+                index={index}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       {/* 詳情彈窗 */}
@@ -219,7 +185,7 @@ export default function FeaturedResourcesSection() {
             exit={{ scale: 0.8, opacity: 0 }}
             transition={{ duration: 0.3 }}
             className="relative max-w-2xl w-full bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 max-h-[80vh] overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e: React.MouseEvent) => e.stopPropagation()}
           >
             {/* 關閉按鈕 */}
             <button
