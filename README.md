@@ -4,6 +4,38 @@
 
 ## 📅 更新記錄
 
+### 2025-08-09 修復 ESLint 錯誤和代碼品質問題 
+#### 🐛 程式碼品質修復：
+- **移除未使用變數和函數參數**：
+  - 修復 `dashboard/page.tsx` 中未使用的 `handleLogout` 和 `logout` 變數
+  - 修復 `DashboardLayout.tsx` 中未使用的 `user` 變數  
+  - 修復 `LiveUpdatesSection.tsx` 中未使用的 `useTranslations` import
+  - 修復 API 路由中未使用的 `request` 參數和 `NextRequest` import
+  - 修復各存儲層中未使用的類型定義和變數
+
+- **React Hook 依賴項優化**：
+  - 使用 `useCallback` 包裝 `fetchAlumni`, `fetchLiveUpdates`, `fetchNews` 函數
+  - 修復 Hook 依賴項警告，確保依賴陣列正確性
+  - 優化 React 性能，避免不必要的重新渲染
+
+- **圖片組件性能提升**：
+  - 替換 `img` 標籤為 Next.js `Image` 組件
+  - 修復校友管理頁面和圖片上傳組件中的圖片顯示
+  - 加入 `sizes` 屬性優化圖片載入性能
+  - 使用 `fill` 屬性配合相對定位容器
+
+- **ESLint 規範修復**：
+  - 修復所有 `@typescript-eslint/no-unused-vars` 錯誤
+  - 添加 `eslint-disable` 註解處理必要的未使用變數 
+  - 確保程式碼符合團隊規範和最佳實踐
+
+#### ✅ 修復成果：
+- ✅ 成功修復 13 個 ESLint 錯誤，程式碼品質大幅提升
+- ✅ 通過 pre-commit hook 檢查，確保 commit 品質
+- ✅ React Hook 性能優化，減少不必要的重新渲染
+- ✅ 圖片載入性能提升，更好的 LCP 和頻寬使用
+- ✅ 程式碼維護性增強，移除冗餘代碼
+
 ### 2025-08-09 重構：分離即時動態為獨立 Section
 #### 🔄 組件重構：
 - **創建新的 LiveUpdatesSection 組件**：
