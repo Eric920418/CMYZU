@@ -178,12 +178,12 @@ export default function Header() {
                 </Link>
               </div>
 
-              <nav className="hidden md:flex space-x-8 bg-white/5! backdrop-blur-md!">
+              <nav className="hidden md:flex space-x-8  ">
                 {navigation.map((item) => (
                   <Link
                     key={item.name}
                     href={item.href}
-                    className="text-gray-600 hover:text-primary-600 transition-colors duration-200"
+                    className="text-gray-100 hover:text-primary-600 transition-colors duration-200"
                   >
                     {item.name}
                   </Link>
@@ -195,7 +195,7 @@ export default function Header() {
                 <div className="relative" ref={navMenuButtonRef}>
                   <button
                     onClick={() => setIsNavMenuOpen(!isNavMenuOpen)}
-                    className="text-gray-600 hover:text-primary-600 flex items-center space-x-1 transition-colors duration-300"
+                    className="text-gray-100 hover:text-primary-600 flex items-center space-x-1 transition-colors duration-300"
                     title={locale === 'zh' ? '網站導航' : 'Site Navigation'}
                   >
                     <div className="relative w-5 h-5">
@@ -240,7 +240,7 @@ export default function Header() {
 
                 <button
                   onClick={handleLanguageSwitch}
-                  className="text-gray-600 hover:text-primary-600 flex items-center space-x-1"
+                  className="text-gray-100 hover:text-primary-600 flex items-center space-x-1"
                   title={t('language')}
                 >
                   <svg
@@ -265,7 +265,7 @@ export default function Header() {
                   <div className="relative" ref={userMenuRef}>
                     <button
                       onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                      className="flex items-center space-x-2 text-gray-700 hover:text-primary-600"
+                      className="flex items-center space-x-2 text-gray-100 hover:text-primary-600"
                     >
                       <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
                         <span className="text-primary-600 font-medium text-sm">
@@ -351,7 +351,7 @@ export default function Header() {
               <div className="md:hidden">
                 <button
                   onClick={() => setIsMenuOpen(!isMenuOpen)}
-                  className="text-gray-600 hover:text-gray-900"
+                  className="text-gray-100 hover:text-gray-900"
                 >
                   <span className="sr-only">Menu</span>
                   <svg
@@ -387,7 +387,7 @@ export default function Header() {
                     <Link
                       key={item.name}
                       href={item.href}
-                      className="text-gray-600 hover:text-primary-600 block px-3 py-2 text-base font-medium"
+                      className="text-gray-100 hover:text-primary-600 block px-3 py-2 text-base font-medium"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       {item.name}
@@ -404,7 +404,7 @@ export default function Header() {
                           <Link
                             key={item.name}
                             href={item.href}
-                            className="text-gray-600 hover:text-primary-600 block px-3 py-2 text-sm rounded-md hover:bg-gray-50"
+                            className="text-gray-100 hover:text-primary-600 block px-3 py-2 text-sm rounded-md hover:bg-gray-50"
                             onClick={() => setIsMenuOpen(false)}
                           >
                             {item.name}
@@ -418,7 +418,7 @@ export default function Header() {
                         handleLanguageSwitch();
                         setIsMenuOpen(false);
                       }}
-                      className="text-gray-600 hover:text-primary-600 flex items-center space-x-2 w-full text-left"
+                      className="text-gray-100 hover:text-primary-600 flex items-center space-x-2 w-full text-left"
                     >
                       <svg
                         className="w-5 h-5"

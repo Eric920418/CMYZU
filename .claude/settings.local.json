@@ -43,8 +43,11 @@
       "Bash(gtimeout:*)",
       "Bash(pnpm db:seed:*)",
       "Bash(node:*)",
-      "Bash(pnpm tsx:*)"
+      "Bash(pnpm tsx:*)",
+      "Bash(pnpm ls:*)",
+      "Bash(pnpm run lint:*)"
     ],
-    "deny": []
+    "deny": [],
+    "defaultMode": "acceptEdits"
   }
 }

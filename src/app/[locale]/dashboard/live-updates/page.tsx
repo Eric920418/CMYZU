@@ -68,12 +68,16 @@ export default function LiveUpdatesManagementPage() {
         });
 
         if (response.success && response.data) {
+          console.log('後台 API 原始數據:', response.data.slice(0, 1)); // 只顯示第一筆方便調試
           const updatesWithDates = response.data.map((item) => ({
             ...item,
             date: new Date(item.date),
             createdAt: new Date(item.createdAt),
             updatedAt: new Date(item.updatedAt),
+            // 修復欄位名稱不一致問題：將 published 映射到 isPublished
+            isPublished: item.published,
           }));
+          console.log('處理後的數據:', updatesWithDates.slice(0, 1)); // 只顯示第一筆方便調試
           setLiveUpdates(updatesWithDates);
         } else {
           throw new Error(response.error || '獲取即時動態失敗');
@@ -194,15 +198,32 @@ export default function LiveUpdatesManagementPage() {
       const updateItem = liveUpdates.find((item) => item.id === updateId);
       if (!updateItem) return;
 
-      const response = await dashboardAPI.liveUpdates.update(updateId, {
-        isPublished: !updateItem.isPublished,
+      console.log('切換前狀態:', {
+        updateId,
+        currentStatus: updateItem.isPublished,
       });
 
+      // 使用 PATCH API 進行狀態切換
+      const response = await dashboardAPI.liveUpdates.patch(updateId, {});
+
+      console.log('API 回應:', response);
+
       if (response.success && response.data) {
+        // 更新本地狀態，將後端的 published 映射到前端的 isPublished
         setLiveUpdates((prev) =>
-          prev.map((item) => (item.id === updateId ? response.data! : item))
+          prev.map((item) =>
+            item.id === updateId
+              ? {
+                  ...item,
+                  isPublished: response.data!.published,
+                  // 同時更新其他可能變更的欄位
+                  updatedAt: new Date(response.data!.updatedAt),
+                }
+              : item
+          )
         );
-        alert(`即時動態已${!updateItem.isPublished ? '發布' : '取消發布'}`);
+        console.log('狀態更新完成:', { newStatus: response.data.published });
+        alert(`即時動態已${response.data.published ? '發布' : '取消發布'}`);
       } else {
         throw new Error(response.error || '更新失敗');
       }

@@ -493,11 +493,15 @@ export default function MoreHighlightsSection() {
                   </svg>
                 </div>
                 <h3 className="text-xl sm:text-2xl font-bold text-white drop-shadow-lg">
-                  @cmyzu_official
+                  @yzucm
                 </h3>
-                <span className="px-3 py-1 bg-gradient-to-r from-purple-500/30 to-pink-500/30 text-pink-100 text-sm rounded-full border border-pink-500/50 font-semibold">
+                <a
+                  href="https://www.instagram.com/yzucm/"
+                  target="_blank"
+                  className="px-3 py-1 bg-gradient-to-r from-purple-500/30 to-pink-500/30 text-pink-100 text-sm rounded-full border border-pink-500/50 font-semibold"
+                >
                   Instagram
-                </span>
+                </a>
               </div>
             </div>
 

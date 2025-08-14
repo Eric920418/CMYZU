@@ -10,13 +10,13 @@ interface DashboardLayoutProps {
   children: ReactNode;
 }
 
-export default function DashboardLayout({ children }: DashboardLayoutProps) {
+function DashboardLayout({ children }: DashboardLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const pathname = usePathname();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
 
-  // 導航項目
-  const navigationItems = [
+  // 基礎導航項目
+  const baseNavigationItems = [
     {
       name: '總覽',
       href: '/dashboard',
@@ -232,7 +232,74 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         </svg>
       ),
     },
+    {
+      name: '全球合作地圖',
+      href: '/dashboard/worldmap',
+      icon: (
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064"
+          />
+        </svg>
+      ),
+    },
   ];
+
+  // 教師專用導航項目
+  const teacherNavigationItems = [
+    {
+      name: '我的部落格',
+      href: '/dashboard/my-blog',
+      icon: (
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+          />
+        </svg>
+      ),
+    },
+    {
+      name: '個人頁面設定',
+      href: '/dashboard/my-profile',
+      icon: (
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+          />
+        </svg>
+      ),
+    },
+  ];
+
+  // 根據用戶角色組合導航項目
+  const navigationItems =
+    user?.role === 'TEACHER'
+      ? [...baseNavigationItems, ...teacherNavigationItems]
+      : [...baseNavigationItems];
 
   const handleLogout = () => {
     if (confirm('確定要登出嗎？')) {
@@ -241,35 +308,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-[110vh] bg-gray-50 flex">
       {/* 側邊欄 */}
       <div
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
+        className={`min-h-screen fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
       >
-        <div className="flex items-center justify-between h-16 px-6 bg-primary-600">
-          <Link href="/dashboard" className="text-white font-bold text-xl">
-            CMYZU 後台
-          </Link>
-          <button
-            onClick={() => setIsSidebarOpen(false)}
-            className="lg:hidden text-white hover:text-gray-300"
-          >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
-        </div>
-
         {/* 導航選單 */}
         <nav className="mt-6 px-3">
           <div className="space-y-1">
@@ -451,3 +494,5 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     </div>
   );
 }
+
+export default DashboardLayout;

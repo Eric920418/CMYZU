@@ -232,5 +232,29 @@
   "FeaturedResources": {
     "title": "特色資源",
     "description": "探索我們的特色資源與服務，為您的學習與發展提供全方位支持。"
+  },
+  "RankingsPage": {
+    "title": "排名管理",
+    "description": "管理學校排名資料與相關資訊",
+    "add_ranking": "新增排名",
+    "edit_ranking": "編輯排名",
+    "delete_ranking": "刪除排名",
+    "ranking_title": "排名標題",
+    "ranking_description": "排名說明",
+    "ranking_position": "排名位置",
+    "ranking_year": "排名年度",
+    "save": "儲存",
+    "cancel": "取消",
+    "confirm_delete": "確定要刪除此排名資料嗎？",
+    "no_rankings": "目前沒有排名資料",
+    "loading": "載入中...",
+    "error_loading": "載入排名資料時發生錯誤",
+    "success_add": "新增排名成功",
+    "success_update": "更新排名成功",
+    "success_delete": "刪除排名成功"
+  },
+  "CreateRankingPage": {
+    "title": "新增排名",
+    "description": "添加學校新的權威排名資訊"
   }
 }

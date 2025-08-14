@@ -156,3 +156,85 @@ export const postsAPI = {
 
 // 健康檢查
 export const healthCheck = () => apiClient.get('/health');
+
+// JWT 驗證函數 - 供後端 API 路由使用
+export async function verifyJWT(request: Request) {
+  try {
+    // 動態導入 jwt，避免在客戶端執行
+    const jwt = await import('jsonwebtoken');
+
+    // 檢查是否可以使用 Prisma
+    let prisma;
+    try {
+      const prismaModule = await import('@/lib/prisma');
+      prisma = prismaModule.prisma;
+    } catch {
+      // 如果 Prisma 不可用，則使用文件存儲
+      prisma = null;
+    }
+
+    // 從 Authorization header 獲取 token
+    const authHeader = request.headers.get('authorization');
+    const token = authHeader?.split(' ')[1]; // Bearer TOKEN
+
+    if (!token) {
+      return {
+        success: false,
+        error: '未提供認證令牌',
+        status: 401,
+      };
+    }
+
+    // 驗證 JWT
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET || 'your-secret-key'
+    ) as { userId: string; email: string };
+
+    let user;
+
+    if (prisma) {
+      // 使用 Prisma 查找用戶
+      user = await prisma.user.findUnique({
+        where: { id: decoded.userId },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+          active: true,
+          image: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      });
+    } else {
+      // 使用文件存儲查找用戶
+      const userStorageModule = await import('@/lib/user-storage');
+      const { findUserById, getSafeUserData } = userStorageModule;
+      const userFromFile = await findUserById(decoded.userId);
+      user = userFromFile ? getSafeUserData(userFromFile) : null;
+    }
+
+    if (!user || !user.active) {
+      return {
+        success: false,
+        error: '無效的認證令牌',
+        status: 401,
+      };
+    }
+
+    return {
+      success: true,
+      user,
+    };
+  } catch (error) {
+    console.error('JWT 驗證錯誤:', error);
+
+    return {
+      success: false,
+      error: '令牌驗證失敗',
+      status: 403,
+    };
+  }
+}

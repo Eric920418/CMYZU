@@ -416,7 +416,7 @@ export default function ChangePasswordPage() {
           <div className="flex">
             <div className="flex-shrink-0">
               <svg
-                className="h-5 w-5 text-blue-400"
+                className="h-5 w-5 text-white"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -430,10 +430,10 @@ export default function ChangePasswordPage() {
               </svg>
             </div>
             <div className="ml-3">
-              <h3 className="text-sm font-medium text-blue-800">
+              <h3 className="text-sm font-medium text-white">
                 {t('security-tips', { default: '安全提示' })}
               </h3>
-              <div className="mt-2 text-sm text-blue-700">
+              <div className="mt-2 text-sm text-white">
                 <ul className="list-disc list-inside space-y-1">
                   <li>{t('tip-1', { default: '密碼至少需要 6 個字元' })}</li>
                   <li>

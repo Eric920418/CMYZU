@@ -250,3 +250,59 @@ export interface FileUpload {
   size: number;
   type: string;
 }
+
+// 教師部落格文章類型
+export interface TeacherPost {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt?: string;
+  content: string; // TipTap JSON content
+  published: boolean;
+  featured: boolean;
+  views: number;
+  tags: string[];
+  category?: string;
+  authorId: string;
+  author?: {
+    id: string;
+    name: string;
+    email: string;
+  };
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// 教師個人頁面設定類型
+export interface TeacherProfile {
+  id: string;
+  userId: string;
+  displayName: string;
+  slug: string;
+  bio?: string;
+  avatar?: string;
+  coverImage?: string;
+  socialLinks?: {
+    website?: string;
+    linkedin?: string;
+    twitter?: string;
+    facebook?: string;
+    instagram?: string;
+    youtube?: string;
+  };
+  showContact: boolean;
+  showResearch: boolean;
+  showPosts: boolean;
+  email?: string;
+  phone?: string;
+  office?: string;
+  researchAreas: string[];
+  user?: {
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+  };
+  createdAt: Date;
+  updatedAt: Date;
+}

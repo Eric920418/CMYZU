@@ -24,6 +24,11 @@ model User {
   liveUpdates   LiveUpdate[]
   alumni        Alumni[]
   annualReports AnnualReport[]
+  rankings      Ranking[]
+  partnerSchools PartnerSchool[]
+  chatConversations ChatConversation[]
+  teacherPosts  TeacherPost[]
+  teacherProfile TeacherProfile?
 
   @@map("users")
 }
@@ -144,6 +149,61 @@ model AnnualReport {
   @@map("annual_reports")
 }
 
+// 排名管理模型
+model Ranking {
+  id          String   @id @default(cuid())
+  rank        String   // 排名 (e.g., "#1", "Top 10")
+  category    String   // 排名類別 (e.g., "學習環境", "西日本私立大學")
+  subtitle    String?  // 副標題 (e.g., "（日本私立大學）")
+  description String?  // 詳細描述
+  logoUrl     String?  // 評鑑機構 Logo URL
+  logoAlt     String?  // Logo 替代文字
+  organization String  // 評鑑機構名稱 (e.g., "THE", "QS")
+  year        Int      // 排名年度
+  order       Int      @default(0) // 顯示順序
+  isActive    Boolean  @default(true) // 是否啟用
+  authorId    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // 關聯
+  author User @relation(fields: [authorId], references: [id])
+
+  @@map("rankings")
+}
+
+// 世界地圖統計數字
+model WorldMapStats {
+  id         String   @id @default("main") // 固定ID，只有一筆資料
+  schools    Int      @default(10)   // 合作學校數
+  students   Int      @default(925)  // 交流學生數
+  countries  Int      @default(8)    // 合作國家數
+  continents Int      @default(4)    // 合作大洲數
+  updatedAt  DateTime @updatedAt
+
+  @@map("worldmap_stats")
+}
+
+// 合作學校
+model PartnerSchool {
+  id        String   @id @default(cuid())
+  name      String   // 學校名稱
+  students  Int      @default(0) // 交流學生數
+  flag      String   // 國家旗幟 emoji
+  latitude  Float    // 緯度
+  longitude Float    // 經度
+  isActive  Boolean  @default(true) // 是否在地圖上顯示
+  order     Int      @default(0) // 顯示順序
+  authorId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // 關聯
+  author User @relation(fields: [authorId], references: [id])
+
+  @@map("partner_schools")
+}
+
 // 列舉類型
 enum Role {
   ADMIN
@@ -156,4 +216,113 @@ enum LiveUpdatePriority {
   MEDIUM
   HIGH
   URGENT
+}
+
+// AI聊天對話模型
+model ChatConversation {
+  id        String   @id @default(cuid())
+  sessionId String?  // 匿名會話ID，未登錄用戶使用
+  userId    String?  // 登錄用戶ID
+  title     String?  // 對話標題（可選）
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // 關聯
+  user     User?        @relation(fields: [userId], references: [id])
+  messages ChatMessage[]
+
+  @@map("chat_conversations")
+}
+
+// AI聊天訊息模型
+model ChatMessage {
+  id             String   @id @default(cuid())
+  conversationId String
+  role           ChatRole // 用戶或助手
+  content        String
+  timestamp      DateTime @default(now())
+
+  // 關聯
+  conversation ChatConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@map("chat_messages")
+}
+
+enum ChatRole {
+  USER
+  ASSISTANT
+}
+
+// 教師部落格文章模型
+model TeacherPost {
+  id          String   @id @default(cuid())
+  title       String   // 文章標題
+  slug        String   @unique // URL 友善路徑
+  excerpt     String?  // 摘要
+  content     String   // TipTap 編輯器內容 (JSON)
+  published   Boolean  @default(false)
+  featured    Boolean  @default(false)
+  views       Int      @default(0)
+  tags        String[] @default([])
+  category    String?  // 文章分類
+  
+  // 關聯
+  authorId    String
+  author      User     @relation(fields: [authorId], references: [id])
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("teacher_posts")
+}
+
+// 教師個人頁面設定模型
+model TeacherProfile {
+  id          String  @id @default(cuid())
+  userId      String  @unique
+  displayName String  // 顯示名稱
+  slug        String  @unique // URL 友善路徑
+  bio         String? // 個人簡介
+  avatar      String? // 頭像
+  coverImage  String? // 封面圖
+  socialLinks Json?   // 社群連結 JSON
+  
+  // 固定模版設定
+  showContact  Boolean @default(true)
+  showResearch Boolean @default(true)
+  showPosts    Boolean @default(true)
+  
+  // 聯絡資訊
+  email       String?
+  phone       String?
+  office      String?
+  
+  // 研究領域
+  researchAreas String[] @default([])
+  
+  // 關聯
+  user        User    @relation(fields: [userId], references: [id])
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("teacher_profiles")
+}
+
+// 統計數據區塊內容模型
+model StatsContent {
+  id               String   @id @default("main") // 固定ID，只有一筆資料
+  title            String   @default("國際化商管教育領航者") // 區塊標題
+  descriptionPart1 String   @default("為幫助學生銜接國際職場，我們積極建構國際化環境，國際學生比例超過10%，並持續成長。")
+  descriptionPart2 String   @default("與歐美、亞洲及大陸地區的海外學校積極建立合作關係，擴展雙聯學位、銜接學位及交換學生等，")
+  descriptionPart3 String   @default("目前已擁有超過100所以上的國外合作學校，知名學校包含:美國密西根大學、美國明尼蘇達大學、英國艾賽克斯大學、英國諾丁漢特倫特大學、法國雷恩商學院、德國佛茨海姆大學及澳洲昆士蘭大學等，")
+  descriptionPart4 String   @default("遍佈全球近30個國家，多達千位以上學生具備國外交流經驗。")
+  stat1            String   @default("北台灣唯一英語標竿學院")
+  stat2            String   @default("企業最愛EMBA")
+  stat3            String   @default("隨意highlight")
+  stat4            String   @default("隨意highlight")
+  updatedAt        DateTime @updatedAt
+  
+  @@map("stats_content")
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   ComposableMap,
   Geographies,
@@ -12,83 +12,76 @@ import {
 // 世界地圖 TopoJSON 資料 URL
 const geoUrl = 'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json';
 
-// 合作學校數據與真實地理坐標
-const partnerSchools = [
-  // 美洲
-  {
-    name: '美國密西根大學',
-    students: 150,
-    flag: '🇺🇸',
-    coordinates: [-83.743, 42.2808] as [number, number],
-  },
-  {
-    name: '美國明尼蘇達大學',
-    students: 120,
-    flag: '🇺🇸',
-    coordinates: [-93.265, 44.9778] as [number, number],
-  },
-
-  // 歐洲
-  {
-    name: '英國艾賽克斯大學',
-    students: 80,
-    flag: '🇬🇧',
-    coordinates: [0.9426, 51.886] as [number, number],
-  },
-  {
-    name: '英國諾丁漢特倫特大學',
-    students: 90,
-    flag: '🇬🇧',
-    coordinates: [-1.1581, 52.9548] as [number, number],
-  },
-  {
-    name: '法國雷恩商學院',
-    students: 70,
-    flag: '🇫🇷',
-    coordinates: [-1.6778, 48.1173] as [number, number],
-  },
-  {
-    name: '德國佛茨海姆大學',
-    students: 60,
-    flag: '🇩🇪',
-    coordinates: [8.696, 48.8566] as [number, number],
-  },
-
-  // 大洋洲
-  {
-    name: '澳洲昆士蘭大學',
-    students: 100,
-    flag: '🇦🇺',
-    coordinates: [153.0137, -27.4975] as [number, number],
-  },
-
-  // 亞洲
-  {
-    name: '日本早稻田大學',
-    students: 85,
-    flag: '🇯🇵',
-    coordinates: [139.7319, 35.709] as [number, number],
-  },
-  {
-    name: '韓國延世大學',
-    students: 75,
-    flag: '🇰🇷',
-    coordinates: [126.9384, 37.5665] as [number, number],
-  },
-  {
-    name: '新加坡國立大學',
-    students: 95,
-    flag: '🇸🇬',
-    coordinates: [103.7764, 1.2966] as [number, number],
-  },
-];
-
 // 台灣坐標
 const taiwanCoordinates: [number, number] = [120.9605, 23.6978];
+
+// 資料介面定義
+interface WorldMapStats {
+  schools: number;
+  students: number;
+  countries: number;
+  continents: number;
+}
+
+interface PartnerSchool {
+  id: string;
+  name: string;
+  students: number;
+  flag: string;
+  latitude: number;
+  longitude: number;
+  coordinates: [number, number]; // 計算後的座標
+}
 
 // 世界地圖組件
 export default function WorldMap() {
   const [hoveredSchool, setHoveredSchool] = useState<string | null>(null);
+  const [stats, setStats] = useState<WorldMapStats>({
+    schools: 10,
+    students: 925,
+    countries: 8,
+    continents: 4,
+  });
+  const [partnerSchools, setPartnerSchools] = useState<PartnerSchool[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // 載入資料
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [statsRes, schoolsRes] = await Promise.all([
+          fetch('/api/worldmap/stats'),
+          fetch('/api/worldmap/schools'),
+        ]);
+
+        if (statsRes.ok) {
+          const statsData = await statsRes.json();
+          setStats(statsData);
+        }
+
+        if (schoolsRes.ok) {
+          const schoolsData = await schoolsRes.json();
+          // 轉換資料格式，添加 coordinates 屬性
+          const formattedSchools = schoolsData
+            .filter((school: any) => school.isActive)
+            .map((school: any) => ({
+              ...school,
+              coordinates: [school.longitude, school.latitude] as [
+                number,
+                number,
+              ],
+            }));
+          setPartnerSchools(formattedSchools);
+        }
+      } catch (error) {
+        console.error('載入世界地圖資料失敗:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <div className="w-full max-w-full overflow-hidden rounded-2xl p-6">
@@ -273,22 +266,38 @@ export default function WorldMap() {
         </ComposableMap>
       </div>
 
+      {/* 載入狀態 */}
+      {loading && (
+        <div className="text-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500 mx-auto mb-2"></div>
+          <p className="text-primary-200">載入地圖資料中...</p>
+        </div>
+      )}
+
       {/* 統計資訊 */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <div className="text-center">
-          <div className="text-2xl font-bold text-amber-500">10</div>
+          <div className="text-2xl font-bold text-amber-500">
+            {stats.schools}
+          </div>
           <div className="text-sm text-primary-200">合作學校</div>
         </div>
         <div className="text-center">
-          <div className="text-2xl font-bold text-amber-500">925</div>
+          <div className="text-2xl font-bold text-amber-500">
+            {stats.students}
+          </div>
           <div className="text-sm text-primary-200">交流學生</div>
         </div>
         <div className="text-center">
-          <div className="text-2xl font-bold text-amber-500">8</div>
+          <div className="text-2xl font-bold text-amber-500">
+            {stats.countries}
+          </div>
           <div className="text-sm text-primary-200">合作國家</div>
         </div>
         <div className="text-center">
-          <div className="text-2xl font-bold text-amber-500">4</div>
+          <div className="text-2xl font-bold text-amber-500">
+            {stats.continents}
+          </div>
           <div className="text-sm text-primary-200">合作大洲</div>
         </div>
       </div>

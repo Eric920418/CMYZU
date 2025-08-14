@@ -19,6 +19,28 @@ const formatDate = (dateInput: string | Date): string => {
   }
 };
 
+// 共用的標題區塊 - 移到組件外部避免重複渲染
+const TitleSection = ({
+  t,
+}: {
+  t: (key: string, options?: { defaultValue: string }) => string;
+}) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.8 }}
+    viewport={{ once: true }}
+    className="text-center mb-12"
+  >
+    <h2 className="text-4xl md:text-5xl font-bold text-primary-700 mb-4">
+      {t('title', { defaultValue: '最新消息' })}
+    </h2>
+    <p className="text-xl text-primary-100 max-w-3xl mx-auto">
+      {t('description', { defaultValue: '掌握學院最新動態與重要資訊' })}
+    </p>
+  </motion.div>
+);
+
 export default function NewsSection() {
   const t = useTranslations('News');
   const isScrolling = useScrollState();
@@ -160,30 +182,12 @@ export default function NewsSection() {
     </div>
   );
 
-  // 共用的標題區塊
-  const TitleSection = () => (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8 }}
-      viewport={{ once: true }}
-      className="text-center mb-12"
-    >
-      <h2 className="text-4xl md:text-5xl font-bold text-primary-700 mb-4">
-        {t('title', { defaultValue: '最新消息' })}
-      </h2>
-      <p className="text-xl text-primary-100 max-w-3xl mx-auto">
-        {t('description', { defaultValue: '掌握學院最新動態與重要資訊' })}
-      </p>
-    </motion.div>
-  );
-
   // 如果沒有新聞內容
   if (!loading && newsItems.length === 0) {
     return (
       <section className="py-16" data-section="news">
         <div className="container mx-auto">
-          <TitleSection />
+          <TitleSection t={t} />
           <div className="text-center py-16">
             <div className="bg-gray-50 border-2 border-dashed border-gray-200 rounded-lg p-12 max-w-md mx-auto">
               <div className="text-gray-400 mb-4">
@@ -221,7 +225,7 @@ export default function NewsSection() {
     return (
       <section className="py-16" data-section="news">
         <div className="container mx-auto">
-          <TitleSection />
+          <TitleSection t={t} />
           <ErrorDisplay />
         </div>
       </section>
@@ -231,7 +235,7 @@ export default function NewsSection() {
   return (
     <section className="py-16" data-section="news">
       <div className="container mx-auto">
-        <TitleSection />
+        <TitleSection t={t} />
 
         {/* 新聞輪播容器 */}
         <div

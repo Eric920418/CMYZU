@@ -22,6 +22,13 @@ export default function DashboardPage() {
     }
   }, [isAuthenticated, isLoading, router]);
 
+  // 教師用戶直接重定向到部落格管理頁面
+  useEffect(() => {
+    if (!isLoading && user?.role === 'TEACHER') {
+      router.push('/zh/dashboard/my-blog');
+    }
+  }, [user, isLoading, router]);
+
   // 載入中
   if (isLoading) {
     return (

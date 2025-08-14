@@ -64,7 +64,7 @@ export default function FeaturedResourcesSection() {
       onClick={() => openDetail(resource)}
     >
       <div
-        className={`relative h-80 rounded-3xl overflow-hidden ${resource.backgroundColor} shadow-xl ${!isScrolling ? 'hover:shadow-2xl' : ''} transition-all duration-300`}
+        className={`relative h-80 rounded-3xl overflow-hidden  shadow-xl ${!isScrolling ? 'hover:shadow-2xl' : ''} transition-all duration-300`}
       >
         {/* 背景圖片 */}
         <div className="absolute inset-0">

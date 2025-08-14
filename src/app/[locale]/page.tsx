@@ -70,7 +70,7 @@ export default function HomePage() {
           {/* 最新消息輪播 */}
           <NewsSection />
         </div>
-        <div className="w-[80%] mx-auto px-1 sm:px-2 lg:px-4 mt-0 md:mt-[-5%]">
+        <div className="w-[80%] mx-auto px-1 sm:px-2 lg:px-4 mt-[-3%] md:mt-[-8%]">
           {/* 即時動態 */}
           <LiveUpdatesSection />
         </div>

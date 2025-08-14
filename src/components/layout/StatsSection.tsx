@@ -1,24 +1,77 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+
+// 統計數據類型定義
+interface StatsData {
+  title: string;
+  descriptionPart1: string;
+  descriptionPart2: string;
+  descriptionPart3: string;
+  descriptionPart4: string;
+  stat1: string;
+  stat2: string;
+  stat3: string;
+  stat4: string;
+}
 
 // 統計數據展示區塊
 export default function StatsSection() {
-  const t = useTranslations('Stats');
+  const [statsData, setStatsData] = useState<StatsData | null>(null);
 
-  // 國際化描述文字，分段顯示
+  // 載入統計數據
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await fetch('/api/stats');
+        if (response.ok) {
+          const data = await response.json();
+          setStatsData(data);
+        } else {
+          console.error('載入統計數據失敗');
+        }
+      } catch (error) {
+        console.error('載入統計數據錯誤:', error);
+      } finally {
+        // 載入完成
+      }
+    };
+
+    fetchStats();
+  }, []);
+
+  // 預設資料（如果API載入失敗）
+  const defaultData: StatsData = {
+    title: '國際化商管教育領航者',
+    descriptionPart1:
+      '為幫助學生銜接國際職場，我們積極建構國際化環境，國際學生比例超過10%，並持續成長。',
+    descriptionPart2:
+      '與歐美、亞洲及大陸地區的海外學校積極建立合作關係，擴展雙聯學位、銜接學位及交換學生等，',
+    descriptionPart3:
+      '目前已擁有超過100所以上的國外合作學校，知名學校包含:美國密西根大學、美國明尼蘇達大學、英國艾賽克斯大學、英國諾丁漢特倫特大學、法國雷恩商學院、德國佛茨海姆大學及澳洲昆士蘭大學等，',
+    descriptionPart4: '遍佈全球近30個國家，多達千位以上學生具備國外交流經驗。',
+    stat1: '北台灣唯一英語標竿學院',
+    stat2: '企業最愛EMBA',
+    stat3: '隨意highlight',
+    stat4: '隨意highlight',
+  };
+
+  // 使用載入的資料或預設資料
+  const currentData = statsData || defaultData;
+
+  // 描述段落
   const descriptionParts = [
-    '為幫助學生銜接國際職場，我們積極建構國際化環境，國際學生比例超過10%，並持續成長。',
-    '與歐美、亞洲及大陸地區的海外學校積極建立合作關係，擴展雙聯學位、銜接學位及交換學生等，',
-    '目前已擁有超過100所以上的國外合作學校，知名學校包含:美國密西根大學、美國明尼蘇達大學、英國艾賽克斯大學、英國諾丁漢特倫特大學、法國雷恩商學院、德國佛茨海姆大學及澳洲昆士蘭大學等，',
-    '遍佈全球近30個國家，多達千位以上學生具備國外交流經驗。',
+    currentData.descriptionPart1,
+    currentData.descriptionPart2,
+    currentData.descriptionPart3,
+    currentData.descriptionPart4,
   ];
 
-  // 四個固定標語
+  // 四個標語（加上固定圖示）
   const stats = [
     {
-      label: '北台灣唯一英語標竿學院',
+      label: currentData.stat1,
       icon: (
         <svg
           className="w-8 h-8"
@@ -36,7 +89,7 @@ export default function StatsSection() {
       ),
     },
     {
-      label: '企業最愛EMBA',
+      label: currentData.stat2,
       icon: (
         <svg
           className="w-8 h-8"
@@ -54,7 +107,7 @@ export default function StatsSection() {
       ),
     },
     {
-      label: '隨意highlight',
+      label: currentData.stat3,
       icon: (
         <svg
           className="w-8 h-8"
@@ -72,7 +125,7 @@ export default function StatsSection() {
       ),
     },
     {
-      label: '隨意highlight',
+      label: currentData.stat4,
       icon: (
         <svg
           className="w-8 h-8"
@@ -152,7 +205,7 @@ export default function StatsSection() {
             transition={{ duration: 0.8, delay: 0.2 }}
             viewport={{ once: true }}
           >
-            {t('title', { defaultValue: '國際化商管教育領航者' })}
+            {currentData.title}
           </motion.h2>
           <div className="text-lg text-primary-100 max-w-4xl mx-auto leading-relaxed space-y-4">
             {descriptionParts.map((part, index) => (

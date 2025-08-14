@@ -71,15 +71,6 @@ export function useLiveUpdates(params?: {
 
         setLiveUpdates(updatesWithDates);
 
-        // 除錯資訊
-        if (typeof window !== 'undefined') {
-          console.log('useLiveUpdates Debug:', {
-            params,
-            totalUpdates: response.data.length,
-            updatesWithDates: updatesWithDates.length,
-          });
-        }
-
         // 如果沒有任何即時動態數據，設置為空陣列
         if (updatesWithDates.length === 0) {
           setLiveUpdates([]);
@@ -95,7 +86,7 @@ export function useLiveUpdates(params?: {
     } finally {
       setLoading(false);
     }
-  }, [params]);
+  }, [params?.published, params?.pageSize, params?.priority]);
 
   useEffect(() => {
     fetchLiveUpdates();

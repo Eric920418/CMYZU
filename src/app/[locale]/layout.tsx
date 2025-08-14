@@ -7,6 +7,7 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { AuthProvider } from '@/contexts/AuthContext';
 import ClientLayoutWrapper from '@/components/ClientLayoutWrapper';
+import ChatSupport from '@/components/chat/ChatSupport';
 
 const notoSans = Noto_Sans({
   subsets: ['latin'],
@@ -121,6 +122,8 @@ export default async function LocaleLayout({
               }
             >
               {children}
+              {/* AI聊天客服 */}
+              <ChatSupport />
             </ClientLayoutWrapper>
           </AuthProvider>
         </NextIntlClientProvider>

@@ -23,23 +23,36 @@ export default function LiveUpdatesSection() {
   // const t = useTranslations('LiveUpdates');
   const isScrolling = useScrollState();
 
-  // 即時動態數據
+  // 即時動態數據，增加防抖以避免頻繁請求
   const { liveUpdates, loading, error, refetch } = usePublishedLiveUpdates({
     pageSize: 10,
   });
+
+  // 添加狀態記憶，減少不必要的重渲染
+  const [prevLiveUpdates, setPrevLiveUpdates] = useState(liveUpdates);
 
   // 即時動態輪播狀態
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlay, setIsAutoPlay] = useState(true);
 
-  // 自動輪播
+  // 檢查數據是否真的變更，避免不必要的重渲染
   useEffect(() => {
-    if (!isAutoPlay || liveUpdates.length === 0) return;
+    if (JSON.stringify(liveUpdates) !== JSON.stringify(prevLiveUpdates)) {
+      setPrevLiveUpdates(liveUpdates);
+      if (currentIndex >= liveUpdates.length && liveUpdates.length > 0) {
+        setCurrentIndex(0);
+      }
+    }
+  }, [liveUpdates, prevLiveUpdates, currentIndex]);
+
+  // 自動輪播，只在數據真正變更時重新設置
+  useEffect(() => {
+    if (!isAutoPlay || prevLiveUpdates.length === 0) return;
     const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % liveUpdates.length);
+      setCurrentIndex((prev) => (prev + 1) % prevLiveUpdates.length);
     }, 3000);
     return () => clearInterval(interval);
-  }, [isAutoPlay, liveUpdates.length]);
+  }, [isAutoPlay, prevLiveUpdates.length]);
 
   // 骨架加載動畫
   const LoadingSkeleton = () => (
@@ -96,7 +109,7 @@ export default function LiveUpdatesSection() {
   );
 
   // 如果沒有即時動態內容
-  if (!loading && liveUpdates.length === 0) {
+  if (!loading && prevLiveUpdates.length === 0) {
     return (
       <section className="py-16" data-section="live-updates">
         <div className="container mx-auto">
@@ -133,7 +146,7 @@ export default function LiveUpdatesSection() {
   }
 
   // 如果有錯誤且沒有即時動態
-  if (error && liveUpdates.length === 0) {
+  if (error && prevLiveUpdates.length === 0) {
     return (
       <section className="py-16" data-section="live-updates">
         <div className="container mx-auto">
@@ -167,7 +180,7 @@ export default function LiveUpdatesSection() {
                 >
                   <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
                     <Link
-                      href={`/live-updates/${liveUpdates[currentIndex].id}`}
+                      href={`/live-updates/${prevLiveUpdates[currentIndex]?.id || '#'}`}
                       className="block group"
                     >
                       <div className="p-4">
@@ -176,9 +189,13 @@ export default function LiveUpdatesSection() {
                             <div className="w-3 h-3 bg-primary-600 rounded-full mr-3 animate-pulse"></div>
                             <span className="text-sm font-medium text-primary-600">
                               {formatDate(
-                                liveUpdates[currentIndex].date instanceof Date
-                                  ? liveUpdates[currentIndex].date
-                                  : new Date(liveUpdates[currentIndex].date)
+                                prevLiveUpdates[currentIndex]?.date instanceof
+                                  Date
+                                  ? prevLiveUpdates[currentIndex].date
+                                  : new Date(
+                                      prevLiveUpdates[currentIndex]?.date ||
+                                        new Date()
+                                    )
                               )}
                             </span>
                           </div>
@@ -187,10 +204,11 @@ export default function LiveUpdatesSection() {
                           </div>
                         </div>
                         <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-primary-600 transition-colors duration-300 leading-tight">
-                          {liveUpdates[currentIndex].title}
+                          {prevLiveUpdates[currentIndex]?.title || '載入中...'}
                         </h3>
                         <p className="text-gray-600 text-base leading-relaxed mb-6 line-clamp-3">
-                          {liveUpdates[currentIndex].content}
+                          {prevLiveUpdates[currentIndex]?.content ||
+                            '內容載入中...'}
                         </p>
                         <div className="flex items-center text-primary-600 font-medium group-hover:text-primary-700 group-hover:translate-x-2 transition-all duration-300">
                           查看完整動態
@@ -217,9 +235,9 @@ export default function LiveUpdatesSection() {
           </div>
 
           {/* 指示器 */}
-          {!loading && liveUpdates.length > 1 && (
+          {!loading && prevLiveUpdates.length > 1 && (
             <div className="flex justify-center items-center mt-6 space-x-2">
-              {liveUpdates.map((_, index) => (
+              {prevLiveUpdates.map((_, index) => (
                 <button
                   key={index}
                   onClick={() => setCurrentIndex(index)}
