@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
@@ -8,102 +8,52 @@ import { useEffect, useState } from 'react';
 // 更多的精采收錄區塊 - Instagram 和 YouTube 社群媒體輪播展示
 export default function MoreHighlightsSection() {
   const t = useTranslations('MoreHighlights');
+  const locale = useLocale(); // 獲取當前語言
   const [youtubeOffset, setYoutubeOffset] = useState(0);
-  const [instagramOffset, setInstagramOffset] = useState(-1);
+  const [instagramOffset, setInstagramOffset] = useState(0);
+  const [youtubeVideos, setYoutubeVideos] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // YouTube 影片數據（模擬數據）
-  const youtubeVideos = [
-    {
-      id: 1,
-      title: '2024畢業典禮精華回顧',
-      thumbnail: '/4.webp',
-      duration: '5:32',
-      views: '12.5K',
-      uploadDate: '3天前',
-      channel: 'CMYZU官方頻道',
-    },
-    {
-      id: 2,
-      title: '學生創新創業競賽成果發表',
-      thumbnail: '/Image.webp',
-      duration: '8:15',
-      views: '8.9K',
-      uploadDate: '1周前',
-      channel: 'CMYZU官方頻道',
-    },
-    {
-      id: 3,
-      title: '國際交換學生生活分享',
-      thumbnail: '/er.webp',
-      duration: '12:40',
-      views: '15.2K',
-      uploadDate: '2周前',
-      channel: 'CMYZU官方頻道',
-    },
-    {
-      id: 4,
-      title: '校園導覽｜現代化教學設施',
-      thumbnail: '/hero-building.webp',
-      duration: '6:28',
-      views: '20.1K',
-      uploadDate: '3周前',
-      channel: 'CMYZU官方頻道',
-    },
-    {
-      id: 5,
-      title: '產學合作成果展示會',
-      thumbnail: '/4.webp',
-      duration: '9:45',
-      views: '7.3K',
-      uploadDate: '1個月前',
-      channel: 'CMYZU官方頻道',
-    },
-    {
-      id: 6,
-      title: '學術研討會國際論壇',
-      thumbnail: '/Image.webp',
-      duration: '15:20',
-      views: '11.8K',
-      uploadDate: '1個月前',
-      channel: 'CMYZU官方頻道',
-    },
-    {
-      id: 7,
-      title: '校園文化節盛大開幕',
-      thumbnail: '/er.webp',
-      duration: '10:45',
-      views: '18.3K',
-      uploadDate: '2個月前',
-      channel: 'CMYZU官方頻道',
-    },
-    {
-      id: 8,
-      title: '教授專題講座｜未來趨勢分析',
-      thumbnail: '/hero-building.webp',
-      duration: '25:12',
-      views: '9.7K',
-      uploadDate: '2個月前',
-      channel: 'CMYZU官方頻道',
-    },
-    {
-      id: 9,
-      title: '學生社團精彩演出',
-      thumbnail: '/4.webp',
-      duration: '7:28',
-      views: '14.6K',
-      uploadDate: '3個月前',
-      channel: 'CMYZU官方頻道',
-    },
-    {
-      id: 10,
-      title: '新生入學指導說明會',
-      thumbnail: '/Image.webp',
-      duration: '18:33',
-      views: '22.4K',
-      uploadDate: '3個月前',
-      channel: 'CMYZU官方頻道',
-    },
-  ];
+  // 載入 YouTube 影片資料
+  const fetchYouTubeVideos = async () => {
+    try {
+      const response = await fetch('/api/youtube');
+      if (!response.ok) {
+        throw new Error('載入 YouTube 影片失敗');
+      }
+      const videos = await response.json();
+      setYoutubeVideos(videos);
+    } catch (error) {
+      console.error('Error fetching YouTube videos:', error);
+      // 如果 API 失敗，使用備用模擬資料
+      setYoutubeVideos([
+        {
+          id: 'fallback-1',
+          title: '2024畢業典禮精華回顧',
+          thumbnail: '/4.webp',
+          duration: '5:32',
+          views: 12500,
+          createdAt: new Date().toISOString(),
+          url: '#',
+        },
+        {
+          id: 'fallback-2',
+          title: '學生創新創業競賽成果發表',
+          thumbnail: '/Image.webp',
+          duration: '8:15',
+          views: 8900,
+          createdAt: new Date().toISOString(),
+          url: '#',
+        },
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchYouTubeVideos();
+  }, []);
 
   // Instagram 貼文數據（模擬數據）
   const instagramPosts = [
@@ -219,6 +169,23 @@ export default function MoreHighlightsSection() {
 
   // 自動輪播效果 - 使用 transform 實現流暢動畫
   useEffect(() => {
+    // 只有當 YouTube 影片載入完成且不是載入狀態時才啟動輪播
+    if (loading || youtubeVideos.length === 0) return;
+
+    let isScrolling = false;
+
+    // 檢測用戶滾動，暫停輪播避免卡頓
+    const handleScroll = () => {
+      isScrolling = true;
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(() => {
+        isScrolling = false;
+      }, 150);
+    };
+
+    let scrollTimer: NodeJS.Timeout;
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
     // 避免 SSR 問題，延遲初始化
     const initCarousel = () => {
       if (typeof window === 'undefined') return;
@@ -227,91 +194,152 @@ export default function MoreHighlightsSection() {
       const isMobile = window.innerWidth < 640;
       const cardWidth = (isMobile ? 288 : 320) + (isMobile ? 16 : 24); // YouTube 卡片寬度 + gap
       const instagramCardWidth = (isMobile ? 256 : 288) + (isMobile ? 16 : 24); // Instagram 卡片寬度 + gap
-      const totalYoutubeWidth = cardWidth * youtubeVideos.length;
-      const totalInstagramWidth = instagramCardWidth * instagramPosts.length;
 
-      // YouTube 輪播：右至左
+      // 計算單組的寬度
+      const singleSetWidth = cardWidth * youtubeVideos.length;
+      const singleInstagramSetWidth =
+        instagramCardWidth * instagramPosts.length;
+
+      // 設置初始位置：YouTube從第2組開始，Instagram從第4組開始
+      setYoutubeOffset(-singleSetWidth);
+      setInstagramOffset(-singleInstagramSetWidth * 3);
+
+      // YouTube 輪播：右至左，真正的無縫循環
       const youtubeInterval = setInterval(() => {
+        if (isScrolling) return; // 滾動時暫停輪播
+
         setYoutubeOffset((prev) => {
           const newOffset = prev - 1;
-          // 當移動到總寬度時，重置為 0，實現無縫循環
-          if (Math.abs(newOffset) >= totalYoutubeWidth) {
-            return 0;
+          // 當移動到第4組末尾時(-4*singleSetWidth)，重置到第2組開始(-singleSetWidth)
+          if (newOffset <= -singleSetWidth * 4) {
+            return -singleSetWidth;
           }
           return newOffset;
         });
-      }, 20);
+      }, 16);
 
-      // Instagram 輪播：左至右（反向）
+      // Instagram 輪播：左至右，真正的無縫循環
       const instagramInterval = setInterval(() => {
+        if (isScrolling) return; // 滾動時暫停輪播
+
         setInstagramOffset((prev) => {
           const newOffset = prev + 1;
-          // 當移動到 0 位置時，重置為負的總寬度，實現無縫循環
-          if (newOffset >= 0) {
-            return -totalInstagramWidth;
+          // 當移動到第2組開始時(-singleInstagramSetWidth)，重置到第4組開始(-3*singleInstagramSetWidth)
+          if (newOffset >= -singleInstagramSetWidth) {
+            return -singleInstagramSetWidth * 3;
           }
           return newOffset;
         });
-      }, 20);
+      }, 16);
 
       return () => {
         clearInterval(youtubeInterval);
         clearInterval(instagramInterval);
+        window.removeEventListener('scroll', handleScroll);
+        clearTimeout(scrollTimer);
       };
     };
 
     // 延遲初始化避免 SSR 問題
     const timer = setTimeout(initCarousel, 100);
     return () => clearTimeout(timer);
-  }, [youtubeVideos.length, instagramPosts.length]);
+  }, [youtubeVideos.length, instagramPosts.length, loading]);
+
+  // 格式化觀看次數
+  const formatViews = (views: number) => {
+    if (views >= 1000000) {
+      return (views / 1000000).toFixed(1) + 'M';
+    }
+    if (views >= 1000) {
+      return (views / 1000).toFixed(1) + 'K';
+    }
+    return views.toString();
+  };
+
+  // 格式化上傳時間
+  const formatUploadDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffTime = Math.abs(now.getTime() - date.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (locale === 'en') {
+      if (diffDays === 1) return '1 day ago';
+      if (diffDays < 7) return `${diffDays} days ago`;
+      if (diffDays < 30)
+        return `${Math.ceil(diffDays / 7)} week${Math.ceil(diffDays / 7) > 1 ? 's' : ''} ago`;
+      if (diffDays < 365)
+        return `${Math.ceil(diffDays / 30)} month${Math.ceil(diffDays / 30) > 1 ? 's' : ''} ago`;
+      return `${Math.ceil(diffDays / 365)} year${Math.ceil(diffDays / 365) > 1 ? 's' : ''} ago`;
+    } else {
+      if (diffDays === 1) return '1天前';
+      if (diffDays < 7) return `${diffDays}天前`;
+      if (diffDays < 30) return `${Math.ceil(diffDays / 7)}周前`;
+      if (diffDays < 365) return `${Math.ceil(diffDays / 30)}個月前`;
+      return `${Math.ceil(diffDays / 365)}年前`;
+    }
+  };
 
   // YouTube 影片卡片組件
-  const YouTubeCard = ({ video }: { video: (typeof youtubeVideos)[0] }) => (
-    <div className="group relative flex-shrink-0 w-72 sm:w-80 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl overflow-hidden hover:bg-white/20 transition-all duration-300 cursor-pointer">
-      {/* 縮圖區域 */}
-      <div className="relative h-44 overflow-hidden">
-        <Image
-          src={video.thumbnail}
-          alt={video.title}
-          fill
-          className="object-cover transition-transform duration-500 group-hover:scale-110"
-          sizes="320px"
-        />
+  const YouTubeCard = ({ video }: { video: any }) => {
+    // 多語系標題：英文版為空或當前語言是中文時顯示中文，否則顯示英文
+    const displayTitle =
+      locale === 'en' && video.titleEn ? video.titleEn : video.title;
 
-        {/* YouTube 播放按鈕 */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center group-hover:bg-red-700 transition-colors duration-300">
-            <svg
-              className="w-6 h-6 text-white ml-1"
-              fill="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path d="M8 5v14l11-7z" />
-            </svg>
+    return (
+      <div
+        className="group relative flex-shrink-0 w-72 sm:w-80 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl overflow-hidden hover:bg-white/20 transition-all duration-300 cursor-pointer"
+        onClick={() =>
+          video.url && video.url !== '#' && window.open(video.url, '_blank')
+        }
+      >
+        {/* 縮圖區域 */}
+        <div className="relative h-44 overflow-hidden">
+          <Image
+            src={video.thumbnail}
+            alt={video.title}
+            fill
+            className="object-cover transition-transform duration-500 group-hover:scale-110"
+            sizes="320px"
+          />
+
+          {/* YouTube 播放按鈕 */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center group-hover:bg-red-700 transition-colors duration-300">
+              <svg
+                className="w-6 h-6 text-white ml-1"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            </div>
+          </div>
+
+          {/* 影片時長 */}
+          <div className="absolute bottom-2 right-2">
+            <span className="px-2 py-1 bg-black/80 text-white text-xs rounded backdrop-blur-sm font-medium">
+              {video.duration}
+            </span>
           </div>
         </div>
 
-        {/* 影片時長 */}
-        <div className="absolute bottom-2 right-2">
-          <span className="px-2 py-1 bg-black/80 text-white text-xs rounded backdrop-blur-sm font-medium">
-            {video.duration}
-          </span>
+        {/* 影片資訊 */}
+        <div className="p-4">
+          <h3 className="text-white font-semibold text-sm mb-2 line-clamp-2 group-hover:text-yellow-200 transition-colors duration-300">
+            {displayTitle}
+          </h3>
+          <div className="flex items-center text-primary-200 text-xs space-x-2">
+            <span>
+              {formatViews(video.views)} {locale === 'en' ? 'views' : '次觀看'}
+            </span>
+            <span>•</span>
+            <span>{formatUploadDate(video.createdAt)}</span>
+          </div>
         </div>
       </div>
-
-      {/* 影片資訊 */}
-      <div className="p-4">
-        <h3 className="text-white font-semibold text-sm mb-2 line-clamp-2 group-hover:text-yellow-200 transition-colors duration-300">
-          {video.title}
-        </h3>
-        <div className="flex items-center text-primary-200 text-xs space-x-2">
-          <span>{video.views} 次觀看</span>
-          <span>•</span>
-          <span>{video.uploadDate}</span>
-        </div>
-      </div>
-    </div>
-  );
+    );
+  };
 
   // Instagram 貼文卡片組件
   const InstagramCard = ({ post }: { post: (typeof instagramPosts)[0] }) => (
@@ -437,7 +465,7 @@ export default function MoreHighlightsSection() {
                   </svg>
                 </div>
                 <h3 className="text-xl sm:text-2xl font-bold text-white drop-shadow-lg">
-                  CMYZU 官方頻道
+                  {t('official_channel')}
                 </h3>
                 <span className="px-3 py-1 bg-red-600/30 text-red-100 text-sm rounded-full border border-red-600/50 font-semibold">
                   YouTube
@@ -459,15 +487,37 @@ export default function MoreHighlightsSection() {
                 style={{
                   transform: `translateX(${youtubeOffset}px)`,
                   minWidth: 'max-content',
+                  willChange: 'transform',
+                  backfaceVisibility: 'hidden',
                 }}
               >
-                {/* 複製影片數據以創造無限輪播效果 */}
-                {[...youtubeVideos, ...youtubeVideos].map((video, index) => (
-                  <YouTubeCard
-                    key={`youtube-${video.id}-${index}`}
-                    video={video}
-                  />
-                ))}
+                {/* 複製影片數據以創造無限輪播效果 - 使用更多重複確保無縫 */}
+                {!loading &&
+                  youtubeVideos.length > 0 &&
+                  [
+                    ...youtubeVideos,
+                    ...youtubeVideos,
+                    ...youtubeVideos,
+                    ...youtubeVideos,
+                    ...youtubeVideos,
+                  ].map((video, index) => (
+                    <YouTubeCard
+                      key={`youtube-${video.id}-${index}`}
+                      video={video}
+                    />
+                  ))}
+
+                {/* 載入狀態顯示 */}
+                {loading && (
+                  <div className="flex items-center justify-center w-full py-8">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+                    <span className="ml-2 text-white text-sm">
+                      {locale === 'en'
+                        ? 'Loading YouTube videos...'
+                        : '載入 YouTube 影片中...'}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           </motion.div>
@@ -520,10 +570,18 @@ export default function MoreHighlightsSection() {
                 style={{
                   transform: `translateX(${instagramOffset}px)`,
                   minWidth: 'max-content',
+                  willChange: 'transform',
+                  backfaceVisibility: 'hidden',
                 }}
               >
-                {/* 複製貼文數據以創造無限輪播效果 */}
-                {[...instagramPosts, ...instagramPosts].map((post, index) => (
+                {/* 複製貼文數據以創造無限輪播效果 - 使用更多重複確保無縫 */}
+                {[
+                  ...instagramPosts,
+                  ...instagramPosts,
+                  ...instagramPosts,
+                  ...instagramPosts,
+                  ...instagramPosts,
+                ].map((post, index) => (
                   <InstagramCard
                     key={`instagram-${post.id}-${index}`}
                     post={post}
@@ -550,7 +608,9 @@ export default function MoreHighlightsSection() {
             >
               <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
             </svg>
-            <span>訂閱 YouTube 頻道</span>
+            <span>
+              {locale === 'en' ? 'Subscribe to YouTube' : '訂閱 YouTube 頻道'}
+            </span>
           </button>
 
           <button className="group inline-flex items-center px-4 sm:px-6 py-3 bg-gradient-to-r from-purple-500/20 to-pink-500/20 hover:from-purple-500/30 hover:to-pink-500/30 border border-pink-500/50 hover:border-pink-500/70 rounded-full text-white font-medium transition-all duration-300 backdrop-blur-md hover:scale-105 text-sm sm:text-base w-full sm:w-auto justify-center">
@@ -561,7 +621,9 @@ export default function MoreHighlightsSection() {
             >
               <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
             </svg>
-            <span>追蹤 Instagram</span>
+            <span>
+              {locale === 'en' ? 'Follow Instagram' : '追蹤 Instagram'}
+            </span>
           </button>
         </motion.div>
       </div>

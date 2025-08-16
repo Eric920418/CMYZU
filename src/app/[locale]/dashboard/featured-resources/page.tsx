@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { dashboardAPI } from '@/lib/dashboard-api';
@@ -11,6 +12,8 @@ import { FeaturedResource } from '@/types/dashboard';
 
 // 特色資源管理頁面
 export default function FeaturedResourcesManagementPage() {
+  const t = useTranslations('FeaturedResourcesManagement');
+  const tCommon = useTranslations('Common');
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const router = useRouter();
   const [resources, setResources] = useState<FeaturedResource[]>([]);
@@ -36,11 +39,11 @@ export default function FeaturedResourcesManagementPage() {
       if (response.success && response.data) {
         setResources(response.data);
       } else {
-        setError(response.error || '載入特色資源失敗');
+        setError(response.error || tCommon('error'));
       }
     } catch (err) {
       console.error('載入特色資源錯誤:', err);
-      setError('載入特色資源時發生錯誤');
+      setError(tCommon('error'));
     } finally {
       setLoading(false);
     }
@@ -54,18 +57,18 @@ export default function FeaturedResourcesManagementPage() {
 
   // 刪除特色資源
   const handleDelete = async (id: string) => {
-    if (!confirm('確定要刪除這個特色資源嗎？')) return;
+    if (!confirm(t('delete_confirm'))) return;
 
     try {
       const response = await dashboardAPI.featuredResources.delete(id);
       if (response.success) {
         await loadResources();
       } else {
-        setError(response.error || '刪除失敗');
+        setError(response.error || tCommon('error'));
       }
     } catch (err) {
       console.error('刪除錯誤:', err);
-      setError('刪除時發生錯誤');
+      setError(tCommon('error'));
     }
   };
 
@@ -109,8 +112,8 @@ export default function FeaturedResourcesManagementPage() {
           {/* 頁面標題和操作 */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">特色資源管理</h1>
-              <p className="text-gray-600">管理網站特色資源內容</p>
+              <h1 className="text-2xl font-bold text-gray-900">{t('title')}</h1>
+              <p className="text-gray-600">{t('description')}</p>
             </div>
             <button
               onClick={() => setShowCreateModal(true)}
@@ -129,7 +132,7 @@ export default function FeaturedResourcesManagementPage() {
                   d="M12 6v6m0 0v6m0-6h6m-6 0H6"
                 />
               </svg>
-              <span>新增特色資源</span>
+              <span>{t('add_new')}</span>
             </button>
           </div>
 
@@ -152,7 +155,7 @@ export default function FeaturedResourcesManagementPage() {
             </div>
             <input
               type="text"
-              placeholder="搜尋特色資源..."
+              placeholder={t('search_placeholder')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-primary-500 focus:border-primary-500"
@@ -189,9 +192,7 @@ export default function FeaturedResourcesManagementPage() {
                     className="object-cover"
                     sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   />
-                  <div
-                    className={`absolute inset-0 ${resource.backgroundColor} opacity-80`}
-                  />
+                  <div className={`absolute inset-0 opacity-80`} />
                   <div className="absolute top-3 left-3">
                     <span className="inline-block px-2 py-1 bg-white/20 backdrop-blur-sm text-white text-xs font-medium rounded-full">
                       {resource.category}
@@ -204,7 +205,7 @@ export default function FeaturedResourcesManagementPage() {
                         setEditingResource(resource);
                       }}
                       className="p-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full text-white transition-colors duration-200"
-                      title="編輯"
+                      title={t('edit')}
                     >
                       <svg
                         className="w-4 h-4"
@@ -226,7 +227,7 @@ export default function FeaturedResourcesManagementPage() {
                         handleDelete(resource.id);
                       }}
                       className="p-2 bg-red-500/20 hover:bg-red-500/30 backdrop-blur-sm rounded-full text-white transition-colors duration-200"
-                      title="刪除"
+                      title={t('delete')}
                     >
                       <svg
                         className="w-4 h-4"
@@ -254,7 +255,9 @@ export default function FeaturedResourcesManagementPage() {
                     {resource.description}
                   </p>
                   <div className="flex items-center justify-between text-xs text-gray-500">
-                    <span>順序: {resource.order}</span>
+                    <span>
+                      {t('order_label')}: {resource.order}
+                    </span>
                     <span
                       className={`px-2 py-1 rounded-full ${
                         resource.isActive
@@ -262,7 +265,7 @@ export default function FeaturedResourcesManagementPage() {
                           : 'bg-gray-100 text-gray-800'
                       }`}
                     >
-                      {resource.isActive ? '啟用' : '停用'}
+                      {resource.isActive ? t('active') : t('inactive')}
                     </span>
                   </div>
                 </div>
@@ -287,12 +290,10 @@ export default function FeaturedResourcesManagementPage() {
                 />
               </svg>
               <h3 className="mt-2 text-sm font-medium text-gray-900">
-                沒有找到特色資源
+                {t('no_resources_found')}
               </h3>
               <p className="mt-1 text-sm text-gray-500">
-                {searchQuery
-                  ? '嘗試調整搜尋條件'
-                  : '開始創建您的第一個特色資源'}
+                {searchQuery ? t('adjust_search') : t('create_first')}
               </p>
             </div>
           )}
@@ -331,10 +332,15 @@ function ResourceModal({
   resource,
   onSuccess,
 }: ResourceModalProps) {
+  const t = useTranslations('FeaturedResourcesManagement');
+  const tCommon = useTranslations('Common');
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     category: '',
+    titleEn: '',
+    descriptionEn: '',
+    categoryEn: '',
     image: '',
     backgroundColor: 'bg-gradient-to-br from-blue-500 to-blue-700',
     textColor: 'text-white',
@@ -351,6 +357,9 @@ function ResourceModal({
         title: resource.title,
         description: resource.description,
         category: resource.category,
+        titleEn: resource.titleEn || '',
+        descriptionEn: resource.descriptionEn || '',
+        categoryEn: resource.categoryEn || '',
         image: resource.image,
         backgroundColor: resource.backgroundColor,
         textColor: resource.textColor,
@@ -362,6 +371,9 @@ function ResourceModal({
         title: '',
         description: '',
         category: '',
+        titleEn: '',
+        descriptionEn: '',
+        categoryEn: '',
         image: '',
         backgroundColor: 'bg-gradient-to-br from-blue-500 to-blue-700',
         textColor: 'text-white',
@@ -385,11 +397,11 @@ function ResourceModal({
       if (response.success) {
         onSuccess();
       } else {
-        setError(response.error || '操作失敗');
+        setError(response.error || tCommon('error'));
       }
     } catch (err) {
       console.error('提交錯誤:', err);
-      setError('提交時發生錯誤');
+      setError(tCommon('error'));
     } finally {
       setLoading(false);
     }
@@ -408,7 +420,7 @@ function ResourceModal({
         <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6 relative z-20">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-medium text-gray-900">
-              {resource ? '編輯特色資源' : '新增特色資源'}
+              {resource ? t('edit_resource') : t('add_resource')}
             </h3>
             <button
               onClick={onClose}
@@ -436,59 +448,124 @@ function ResourceModal({
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* 標題 */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                標題
-              </label>
-              <input
-                type="text"
-                required
-                value={formData.title}
-                onChange={(e) =>
-                  setFormData({ ...formData, title: e.target.value })
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500"
-              />
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* 中文內容區塊 */}
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <h4 className="text-md font-semibold text-gray-900 mb-3">
+                {t('chinese_content')}
+              </h4>
+
+              {/* 中文標題 */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {t('title_field')}
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formData.title}
+                  onChange={(e) =>
+                    setFormData({ ...formData, title: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500"
+                />
+              </div>
+
+              {/* 中文描述 */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {t('description_field')}
+                </label>
+                <textarea
+                  required
+                  rows={3}
+                  value={formData.description}
+                  onChange={(e) =>
+                    setFormData({ ...formData, description: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500"
+                />
+              </div>
+
+              {/* 中文分類 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {t('category_field')}
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formData.category}
+                  onChange={(e) =>
+                    setFormData({ ...formData, category: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500"
+                />
+              </div>
             </div>
 
-            {/* 描述 */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                描述
-              </label>
-              <textarea
-                required
-                rows={3}
-                value={formData.description}
-                onChange={(e) =>
-                  setFormData({ ...formData, description: e.target.value })
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500"
-              />
-            </div>
+            {/* 英文內容區塊 */}
+            <div className="bg-white p-4 rounded-lg border border-blue-200">
+              <h4 className="text-md font-semibold text-gray-900 mb-2">
+                {t('english_content')}
+              </h4>
+              <p className="text-sm text-gray-600 mb-3">
+                {t('bilingual_note')}
+              </p>
 
-            {/* 分類 */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                分類
-              </label>
-              <input
-                type="text"
-                required
-                value={formData.category}
-                onChange={(e) =>
-                  setFormData({ ...formData, category: e.target.value })
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500"
-              />
+              {/* 英文標題 */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {t('english_title')}
+                </label>
+                <input
+                  type="text"
+                  value={formData.titleEn}
+                  onChange={(e) =>
+                    setFormData({ ...formData, titleEn: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500"
+                  placeholder="Optional English title"
+                />
+              </div>
+
+              {/* 英文描述 */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {t('english_description')}
+                </label>
+                <textarea
+                  rows={3}
+                  value={formData.descriptionEn}
+                  onChange={(e) =>
+                    setFormData({ ...formData, descriptionEn: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500"
+                  placeholder="Optional English description"
+                />
+              </div>
+
+              {/* 英文分類 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {t('english_category')}
+                </label>
+                <input
+                  type="text"
+                  value={formData.categoryEn}
+                  onChange={(e) =>
+                    setFormData({ ...formData, categoryEn: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500"
+                  placeholder="Optional English category"
+                />
+              </div>
             </div>
 
             {/* 圖片URL */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                圖片 URL
+                {t('image_url_field')}
               </label>
               <input
                 type="url"
@@ -501,68 +578,11 @@ function ResourceModal({
               />
             </div>
 
-            {/* 背景色和文字色 */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  背景樣式
-                </label>
-                <select
-                  value={formData.backgroundColor}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      backgroundColor: e.target.value,
-                    })
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500"
-                >
-                  <option value="bg-gradient-to-br from-blue-500 to-blue-700">
-                    藍色漸層
-                  </option>
-                  <option value="bg-gradient-to-br from-green-500 to-green-700">
-                    綠色漸層
-                  </option>
-                  <option value="bg-gradient-to-br from-orange-400 to-orange-600">
-                    橙色漸層
-                  </option>
-                  <option value="bg-gradient-to-br from-red-500 to-red-700">
-                    紅色漸層
-                  </option>
-                  <option value="bg-gradient-to-br from-purple-500 to-purple-700">
-                    紫色漸層
-                  </option>
-                  <option value="bg-gradient-to-br from-teal-400 to-green-500">
-                    藍綠漸層
-                  </option>
-                  <option value="bg-gradient-to-br from-gray-400 to-gray-600">
-                    灰色漸層
-                  </option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  文字顏色
-                </label>
-                <select
-                  value={formData.textColor}
-                  onChange={(e) =>
-                    setFormData({ ...formData, textColor: e.target.value })
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500"
-                >
-                  <option value="text-white">白色</option>
-                  <option value="text-black">黑色</option>
-                  <option value="text-gray-800">深灰色</option>
-                </select>
-              </div>
-            </div>
-
             {/* 順序和狀態 */}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  排序順序
+                  {t('order_field')}
                 </label>
                 <input
                   type="number"
@@ -580,7 +600,7 @@ function ResourceModal({
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  狀態
+                  {t('status_field')}
                 </label>
                 <select
                   value={formData.isActive.toString()}
@@ -592,8 +612,8 @@ function ResourceModal({
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500"
                 >
-                  <option value="true">啟用</option>
-                  <option value="false">停用</option>
+                  <option value="true">{t('active')}</option>
+                  <option value="false">{t('inactive')}</option>
                 </select>
               </div>
             </div>
@@ -605,14 +625,18 @@ function ResourceModal({
                 onClick={onClose}
                 className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded-lg transition-colors duration-200"
               >
-                取消
+                {t('cancel')}
               </button>
               <button
                 type="submit"
                 disabled={loading}
                 className="flex-1 bg-primary-600 hover:bg-primary-700 disabled:bg-primary-400 text-white py-2 px-4 rounded-lg transition-colors duration-200"
               >
-                {loading ? '處理中...' : resource ? '更新' : '創建'}
+                {loading
+                  ? t('processing')
+                  : resource
+                    ? t('update')
+                    : t('create')}
               </button>
             </div>
           </form>

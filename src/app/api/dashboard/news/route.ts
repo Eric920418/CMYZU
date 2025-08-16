@@ -115,10 +115,14 @@ export async function POST(request: NextRequest) {
       title: body.title,
       content: body.content,
       excerpt: body.excerpt,
+      titleEn: body.titleEn,
+      contentEn: body.contentEn,
+      excerptEn: body.excerptEn,
       imageUrl: body.imageUrl,
       published: body.published || false,
       featured: body.featured || false,
       authorId: user.id,
+      publishedAt: body.publishedAt,
     });
 
     return NextResponse.json({

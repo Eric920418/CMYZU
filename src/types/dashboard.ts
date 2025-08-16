@@ -20,12 +20,16 @@ export interface StatsDescription {
   updatedAt: Date;
 }
 
-// 新聞類型
+// 新聞類型 - 支援中英雙語系
 export interface News {
   id: string;
   title: string;
   excerpt: string;
   content?: string; // 完整內容
+  // 英文欄位
+  titleEn?: string;
+  excerptEn?: string;
+  contentEn?: string;
   date: Date;
   imageUrl: string; // 後台 API 使用 imageUrl
   image?: string; // 前台相容欄位
@@ -36,11 +40,14 @@ export interface News {
   updatedAt: Date;
 }
 
-// 即時動態類型（獨立資料表）
+// 即時動態類型（獨立資料表）- 支援中英雙語系
 export interface LiveUpdate {
   id: string;
   title: string;
   content: string; // 即時動態內容
+  // 英文欄位
+  titleEn?: string;
+  contentEn?: string;
   date: Date;
   isPublished: boolean;
   order: number;
@@ -50,13 +57,16 @@ export interface LiveUpdate {
   updatedAt: Date;
 }
 
-// 特色資源類型
+// 特色資源類型 (支援中英雙語系)
 export interface FeaturedResource {
   id: string;
   title: string;
   description: string;
+  titleEn?: string;
+  descriptionEn?: string;
   image: string;
   category: string;
+  categoryEn?: string;
   backgroundColor: string; // Tailwind class
   textColor: string; // Tailwind class
   isActive: boolean;
@@ -65,17 +75,25 @@ export interface FeaturedResource {
   updatedAt: Date;
 }
 
-// 排名類型
+// 排名類型 - 支援中英雙語系
 export interface Ranking {
   id: string;
   rank: string; // #1, #2 等
   category: string;
   subtitle?: string;
   description?: string;
-  logo?: string;
+  organization: string;
+  // 英文欄位
+  categoryEn?: string;
+  subtitleEn?: string;
+  descriptionEn?: string;
+  organizationEn?: string;
+  logoUrl?: string;
   logoAlt?: string;
+  year: number;
   isActive: boolean;
   order: number;
+  authorId: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -101,6 +119,12 @@ export interface Alumni {
   name: string; // 姓名
   position: string; // 職位
   description: string;
+  // 英文欄位
+  nameEn?: string;
+  positionEn?: string;
+  descriptionEn?: string;
+  achievementsEn: string[];
+
   imageUrl?: string;
   achievements: string[];
   isActive: boolean;
@@ -162,12 +186,14 @@ export interface HeroContent {
   updatedAt: Date;
 }
 
-// 年報管理類型
+// 年報管理類型 - 支援中英雙語系
 export interface AnnualReport {
   id: string;
   year: number; // 年度 (e.g., 2023)
   title: string; // 顯示標題 (e.g., "2023年報")
+  titleEn?: string; // 英文版標題
   description?: string; // 描述文字
+  descriptionEn?: string; // 英文版描述
   fileUrl: string; // 年報檔案 URL
   fileName: string; // 原始檔名
   fileSize?: number; // 檔案大小 (bytes)

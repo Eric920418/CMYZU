@@ -1,21 +1,28 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect, useMemo } from 'react';
 import { useScrollState } from '@/hooks/useScrollState';
 import { usePublishedNews } from '@/hooks/useNews';
+import { News } from '@/types/dashboard';
 
-const formatDate = (dateInput: string | Date): string => {
+// 日期格式化函數 - 添加locale參數支援多語系
+const formatDate = (
+  dateInput: string | Date,
+  locale: string = 'zh-TW'
+): string => {
   try {
     const date = dateInput instanceof Date ? dateInput : new Date(dateInput);
     return isNaN(date.getTime())
-      ? '無效日期'
-      : date.toLocaleDateString('zh-TW');
+      ? locale === 'en'
+        ? 'Invalid Date'
+        : '無效日期'
+      : date.toLocaleDateString(locale === 'en' ? 'en-US' : 'zh-TW');
   } catch {
-    return '無效日期';
+    return locale === 'en' ? 'Invalid Date' : '無效日期';
   }
 };
 
@@ -43,7 +50,19 @@ const TitleSection = ({
 
 export default function NewsSection() {
   const t = useTranslations('News');
+  const locale = useLocale(); // 使用 next-intl 的 useLocale hook
   const isScrolling = useScrollState();
+
+  // 根據語系選擇顯示的新聞內容
+  const getLocalizedContent = (item: News) => {
+    const isEnglish = locale === 'en';
+
+    return {
+      title: isEnglish && item.titleEn ? item.titleEn : item.title,
+      excerpt: isEnglish && item.excerptEn ? item.excerptEn : item.excerpt,
+      // 如果沒有對應語系的內容，fallback 到中文版本
+    };
+  };
 
   const {
     news: newsItems,
@@ -169,14 +188,14 @@ export default function NewsSection() {
           </svg>
         </div>
         <h3 className="text-lg font-semibold text-red-800 mb-2">
-          載入新聞失敗
+          {t('loading_failed')}
         </h3>
         <p className="text-red-600 mb-4">{error}</p>
         <button
           onClick={refetch}
           className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
         >
-          重新載入
+          {t('reload')}
         </button>
       </div>
     </div>
@@ -206,12 +225,10 @@ export default function NewsSection() {
                 </svg>
               </div>
               <h3 className="text-lg font-medium text-gray-600 mb-2">
-                暫無最新消息
+                {t('no_news')}
               </h3>
               <p className="text-gray-500 text-sm">
-                目前沒有發佈的新聞內容
-                <br />
-                請稍後再查看或關注我們的最新動態
+                {t('no_news_description')}
               </p>
             </div>
           </div>
@@ -260,6 +277,9 @@ export default function NewsSection() {
                   className="flex"
                 >
                   {currentVisibleItems.map((item) => {
+                    // 取得當前語系對應的內容
+                    const localizedContent = getLocalizedContent(item);
+
                     const date =
                       item.date instanceof Date
                         ? item.date
@@ -289,9 +309,10 @@ export default function NewsSection() {
                       >
                         <Link href={`/news/${item.id}`}>
                           <div
-                            className={`group bg-white rounded-2xl shadow-lg transition-all duration-300 overflow-hidden h-full border border-gray-100 ${
+                            className={`group bg-white rounded-2xl shadow-lg transition-all duration-300 overflow-hidden border border-gray-100 flex flex-col ${
                               isScrolling ? '' : 'hover:shadow-2xl'
                             }`}
+                            style={{ height: '450px' }}
                           >
                             {/* 新聞圖片 */}
                             <div
@@ -319,7 +340,7 @@ export default function NewsSection() {
                               />
                               <div className="absolute top-4 left-4">
                                 <div className="bg-primary-600 text-white px-3 py-1 rounded-full text-sm font-medium">
-                                  新聞稿
+                                  {t('news_type')}
                                 </div>
                               </div>
                               <div className="absolute top-4 right-4">
@@ -330,22 +351,24 @@ export default function NewsSection() {
                             </div>
 
                             {/* 新聞內容 */}
-                            <div className="p-6">
-                              <h3
-                                className={`text-lg font-bold text-gray-900 mb-3 transition-colors duration-300 line-clamp-2 ${
-                                  isScrolling
-                                    ? ''
-                                    : 'group-hover:text-primary-600'
-                                }`}
-                              >
-                                {item.title}
-                              </h3>
-                              <p className="text-gray-600 text-sm line-clamp-3 mb-4">
-                                {item.excerpt}
-                              </p>
-                              <div className="flex items-center justify-between">
+                            <div className="p-6 flex flex-col justify-between flex-1">
+                              <div className="flex-1">
+                                <h3
+                                  className={`text-lg font-bold text-gray-900 mb-3 transition-colors duration-300 line-clamp-2 min-h-[3.5rem] ${
+                                    isScrolling
+                                      ? ''
+                                      : 'group-hover:text-primary-600'
+                                  }`}
+                                >
+                                  {localizedContent.title}
+                                </h3>
+                                <p className="text-gray-600 text-sm line-clamp-3 mb-4 min-h-[4.5rem]">
+                                  {localizedContent.excerpt}
+                                </p>
+                              </div>
+                              <div className="flex items-center justify-between mt-auto">
                                 <span className="text-sm text-gray-500">
-                                  {formatDate(item.date)}
+                                  {formatDate(item.date, locale)}
                                 </span>
                                 <div
                                   className={`flex items-center text-primary-600 font-medium text-sm transition-transform duration-300 ${
@@ -354,7 +377,7 @@ export default function NewsSection() {
                                       : 'group-hover:translate-x-2'
                                   }`}
                                 >
-                                  閱讀更多
+                                  {t('read_more')}
                                   <svg
                                     className="w-4 h-4 ml-1"
                                     fill="none"

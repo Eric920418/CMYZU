@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslations, useLocale } from 'next-intl';
 import {
   ComposableMap,
   Geographies,
@@ -26,6 +27,7 @@ interface WorldMapStats {
 interface PartnerSchool {
   id: string;
   name: string;
+  nameEn?: string | null;
   students: number;
   flag: string;
   latitude: number;
@@ -33,8 +35,18 @@ interface PartnerSchool {
   coordinates: [number, number]; // 計算後的座標
 }
 
+// 根據語系獲取學校名稱
+const getSchoolName = (school: PartnerSchool, locale: string): string => {
+  if (locale === 'en' && school.nameEn) {
+    return school.nameEn;
+  }
+  return school.name;
+};
+
 // 世界地圖組件
 export default function WorldMap() {
+  const t = useTranslations('WorldMap');
+  const locale = useLocale();
   const [hoveredSchool, setHoveredSchool] = useState<string | null>(null);
   const [stats, setStats] = useState<WorldMapStats>({
     schools: 10,
@@ -74,7 +86,7 @@ export default function WorldMap() {
           setPartnerSchools(formattedSchools);
         }
       } catch (error) {
-        console.error('載入世界地圖資料失敗:', error);
+        console.error('Failed to load world map data:', error);
       } finally {
         setLoading(false);
       }
@@ -88,9 +100,9 @@ export default function WorldMap() {
       {/* 標題區域 */}
       <div className="text-center mb-8">
         <h3 className="text-2xl md:text-3xl font-bold text-gray-50 mb-2">
-          全球合作學校分布
+          {t('title')}
         </h3>
-        <p className="text-primary-100">遍佈全球近30個國家的教育合作網絡</p>
+        <p className="text-primary-100">{t('subtitle')}</p>
       </div>
 
       {/* 世界地圖 */}
@@ -179,7 +191,7 @@ export default function WorldMap() {
                   filter: 'drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8))',
                 }}
               >
-                🇹🇼 台灣
+                🇹🇼 {t('taiwan')}
               </text>
             </g>
           </Marker>
@@ -187,10 +199,11 @@ export default function WorldMap() {
           {/* 合作學校標記 */}
           {partnerSchools.map((school) => {
             const radius = Math.max(4, school.students / 25);
-            const isHovered = hoveredSchool === school.name;
+            const schoolName = getSchoolName(school, locale);
+            const isHovered = hoveredSchool === school.id;
 
             return (
-              <Marker key={school.name} coordinates={school.coordinates}>
+              <Marker key={school.id} coordinates={school.coordinates}>
                 <g>
                   {/* 脈衝背景動畫 */}
                   <circle
@@ -212,7 +225,7 @@ export default function WorldMap() {
                         : 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3))',
                       transform: isHovered ? 'scale(1.3)' : 'scale(1)',
                     }}
-                    onMouseEnter={() => setHoveredSchool(school.name)}
+                    onMouseEnter={() => setHoveredSchool(school.id)}
                     onMouseLeave={() => setHoveredSchool(null)}
                   />
 
@@ -242,7 +255,7 @@ export default function WorldMap() {
                           fill: '#ffffff',
                         }}
                       >
-                        {school.flag} {school.name}
+                        {school.flag} {schoolName}
                       </text>
 
                       {/* 學生數量 */}
@@ -255,7 +268,7 @@ export default function WorldMap() {
                           fill: 'rgb(245, 158, 11)',
                         }}
                       >
-                        {school.students} 位交流學生
+                        {school.students} {t('exchange_students')}
                       </text>
                     </g>
                   )}
@@ -270,7 +283,7 @@ export default function WorldMap() {
       {loading && (
         <div className="text-center py-8">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500 mx-auto mb-2"></div>
-          <p className="text-primary-200">載入地圖資料中...</p>
+          <p className="text-primary-200">{t('loading')}</p>
         </div>
       )}
 
@@ -280,25 +293,25 @@ export default function WorldMap() {
           <div className="text-2xl font-bold text-amber-500">
             {stats.schools}
           </div>
-          <div className="text-sm text-primary-200">合作學校</div>
+          <div className="text-sm text-primary-200">{t('partner_schools')}</div>
         </div>
         <div className="text-center">
           <div className="text-2xl font-bold text-amber-500">
             {stats.students}
           </div>
-          <div className="text-sm text-primary-200">交流學生</div>
+          <div className="text-sm text-primary-200">{t('students')}</div>
         </div>
         <div className="text-center">
           <div className="text-2xl font-bold text-amber-500">
             {stats.countries}
           </div>
-          <div className="text-sm text-primary-200">合作國家</div>
+          <div className="text-sm text-primary-200">{t('countries')}</div>
         </div>
         <div className="text-center">
           <div className="text-2xl font-bold text-amber-500">
             {stats.continents}
           </div>
-          <div className="text-sm text-primary-200">合作大洲</div>
+          <div className="text-sm text-primary-200">{t('continents')}</div>
         </div>
       </div>
 
@@ -306,11 +319,15 @@ export default function WorldMap() {
       <div className="flex flex-wrap justify-center gap-6 text-sm text-gray-200">
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 rounded-full bg-amber-500 shadow-lg shadow-amber-500/30"></div>
-          <span className="text-white font-medium">合作學校位置</span>
+          <span className="text-white font-medium">
+            {t('legend_partner_location')}
+          </span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 rounded-full bg-amber-500 shadow-lg shadow-amber-500/30"></div>
-          <span className="text-white font-medium">台灣位置</span>
+          <span className="text-white font-medium">
+            {t('legend_taiwan_location')}
+          </span>
         </div>
         <div className="flex items-center gap-2">
           <div
@@ -320,11 +337,13 @@ export default function WorldMap() {
                 'repeating-linear-gradient(to right, rgb(245, 158, 11) 0, rgb(245, 158, 11) 3px, transparent 3px, transparent 6px)',
             }}
           ></div>
-          <span className="text-white font-medium">合作連線</span>
+          <span className="text-white font-medium">
+            {t('legend_connection')}
+          </span>
         </div>
         <div className="flex items-center gap-2">
           <span className="text-xs text-amber-400 font-medium">
-            點大小代表交流學生數量
+            {t('legend_size_hint')}
           </span>
         </div>
       </div>

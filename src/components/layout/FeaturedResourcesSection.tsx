@@ -1,21 +1,45 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
-import { motion } from 'framer-motion';
+import { useTranslations, useLocale } from 'next-intl';
+import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useScrollState } from '@/hooks/useScrollState';
 import { useFeaturedResources } from '@/hooks/useFeaturedResources';
 
 // 特色資源區塊 - 垂直排列的卡片展示
 export default function FeaturedResourcesSection() {
   const t = useTranslations('FeaturedResources');
+  const locale = useLocale();
   const { resources, loading, error } = useFeaturedResources();
+
+  // 根據語系獲取本地化內容
+  const getLocalizedContent = (resource: (typeof resources)[0]) => {
+    const isEnglish = locale === 'en';
+    return {
+      title: isEnglish && resource.titleEn ? resource.titleEn : resource.title,
+      description:
+        isEnglish && resource.descriptionEn
+          ? resource.descriptionEn
+          : resource.description,
+      category:
+        isEnglish && resource.categoryEn
+          ? resource.categoryEn
+          : resource.category,
+    };
+  };
   const [selectedResource, setSelectedResource] = useState<
     (typeof resources)[0] | null
   >(null);
   const isScrolling = useScrollState();
   const [hasAnimated, setHasAnimated] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  // 標記組件已 mounted，用於 Portal
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // 當資源載入完成後，標記動畫已執行
   useEffect(() => {
@@ -70,7 +94,7 @@ export default function FeaturedResourcesSection() {
         <div className="absolute inset-0">
           <Image
             src={resource.image}
-            alt={resource.title}
+            alt={getLocalizedContent(resource).title}
             fill
             className={`object-cover opacity-30 ${!isScrolling ? 'group-hover:opacity-40' : ''} transition-opacity duration-300`}
             sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
@@ -83,7 +107,7 @@ export default function FeaturedResourcesSection() {
         {/* 分類標籤 */}
         <div className="absolute top-6 left-6">
           <span className="inline-block px-3 py-1 bg-white/20 backdrop-blur-sm text-white text-sm font-medium rounded-full">
-            {resource.category}
+            {getLocalizedContent(resource).category}
           </span>
         </div>
 
@@ -92,12 +116,12 @@ export default function FeaturedResourcesSection() {
           <h3
             className={`text-xl font-bold mb-3 leading-tight ${resource.textColor}`}
           >
-            {resource.title}
+            {getLocalizedContent(resource).title}
           </h3>
           <p
             className={`text-sm leading-relaxed opacity-90 ${resource.textColor}`}
           >
-            {resource.description}
+            {getLocalizedContent(resource).description}
           </p>
         </div>
 
@@ -150,12 +174,12 @@ export default function FeaturedResourcesSection() {
           </div>
         ) : error ? (
           <div className="text-center py-12">
-            <div className="text-red-500 mb-4">載入特色資源時發生錯誤</div>
+            <div className="text-red-500 mb-4">{t('loading_error')}</div>
             <p className="text-gray-500">{error}</p>
           </div>
         ) : resources.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-gray-500">目前沒有特色資源可顯示</p>
+            <p className="text-gray-500">{t('no_resources')}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
@@ -170,69 +194,92 @@ export default function FeaturedResourcesSection() {
         )}
       </div>
 
-      {/* 詳情彈窗 */}
-      {selectedResource && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
-          onClick={closeDetail}
-        >
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.8, opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="relative max-w-2xl w-full bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 max-h-[80vh] overflow-y-auto"
-            onClick={(e: React.MouseEvent) => e.stopPropagation()}
-          >
-            {/* 關閉按鈕 */}
-            <button
-              onClick={closeDetail}
-              className="absolute top-4 right-4 w-8 h-8 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center text-white transition-colors duration-200"
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+      {/* 詳情彈窗 - 使用 Portal 渲染到 body */}
+      {isMounted &&
+        createPortal(
+          <AnimatePresence>
+            {selectedResource && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md"
+                onClick={closeDetail}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
+                <motion.div
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.8, opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="relative max-w-2xl w-full bg-white/30 backdrop-blur-lg border border-white/40 rounded-2xl p-6 max-h-[80vh] overflow-y-auto shadow-2xl"
+                  onClick={(e: React.MouseEvent) => e.stopPropagation()}
+                >
+                  {/* 關閉按鈕 */}
+                  <button
+                    onClick={closeDetail}
+                    className="absolute top-4 right-4 w-8 h-8 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center text-white transition-colors duration-200"
+                  >
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
 
-            {/* 彈窗內容 */}
-            <div className="space-y-4">
-              <span className="inline-block px-3 py-1 bg-primary-600/90 text-white text-sm rounded-full">
-                {selectedResource.category}
-              </span>
-              <h3 className="text-2xl font-bold text-white">
-                {selectedResource.title}
-              </h3>
-              <p className="text-primary-100 leading-relaxed">
-                {selectedResource.description}
-              </p>
+                  {/* 彈窗內容 */}
+                  <div className="space-y-6">
+                    <div className="flex items-start justify-between">
+                      <span className="inline-block px-3 py-1 bg-primary-600/90 text-white text-sm rounded-full">
+                        {getLocalizedContent(selectedResource).category}
+                      </span>
+                    </div>
 
-              {/* 圖片預覽 */}
-              <div className="relative h-40 rounded-lg overflow-hidden mt-6">
-                <Image
-                  src={selectedResource.image}
-                  alt={selectedResource.title}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                />
-              </div>
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
+                    <div>
+                      <h3 className="text-2xl font-bold text-white mb-4">
+                        {getLocalizedContent(selectedResource).title}
+                      </h3>
+                      <p className="text-primary-100 leading-relaxed text-lg">
+                        {getLocalizedContent(selectedResource).description}
+                      </p>
+                    </div>
+
+                    {/* 圖片預覽 */}
+                    <div className="relative h-96 rounded-xl overflow-hidden ">
+                      <Image
+                        src={selectedResource.image}
+                        alt={getLocalizedContent(selectedResource).title}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, 100vw"
+                      />
+                    </div>
+
+                    {/* 行動按鈕 */}
+                    <div className="flex gap-3 pt-4">
+                      <button className="flex-1 bg-primary-600 hover:bg-primary-700 text-white py-3 px-6 rounded-lg font-medium transition-colors duration-200">
+                        {t('learn_more')}
+                      </button>
+                    </div>
+
+                    {/* 額外資訊 */}
+                    <div className="text-sm text-primary-200 pt-2 border-t border-white/20">
+                      <p>{t('hint_text')}</p>
+                    </div>
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>,
+          document.body
+        )}
     </section>
   );
 }

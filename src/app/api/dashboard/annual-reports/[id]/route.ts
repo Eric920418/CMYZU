@@ -80,8 +80,17 @@ export async function PUT(
     verifyAuth(request);
 
     const body = await request.json();
-    const { year, title, description, fileUrl, fileName, fileSize, isActive } =
-      body;
+    const {
+      year,
+      title,
+      titleEn,
+      description,
+      descriptionEn,
+      fileUrl,
+      fileName,
+      fileSize,
+      isActive,
+    } = body;
 
     // 驗證年度格式（如果有提供）
     if (year) {
@@ -97,7 +106,9 @@ export async function PUT(
     const updatedReport = await annualReportsStorage.update(params.id, {
       year: year ? parseInt(year) : undefined,
       title,
+      titleEn,
       description,
+      descriptionEn,
       fileUrl,
       fileName,
       fileSize: fileSize ? parseInt(fileSize) : undefined,

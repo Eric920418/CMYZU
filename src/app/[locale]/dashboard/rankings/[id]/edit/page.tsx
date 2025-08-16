@@ -14,9 +14,14 @@ interface RankingForm {
   category: string;
   subtitle: string;
   description: string;
+  organization: string;
+  // 英文欄位
+  categoryEn: string;
+  subtitleEn: string;
+  descriptionEn: string;
+  organizationEn: string;
   logoUrl: string;
   logoAlt: string;
-  organization: string;
   year: number;
   isActive: boolean;
 }
@@ -29,7 +34,7 @@ interface EditRankingPageProps {
 }
 
 export default function EditRankingPage({ params }: EditRankingPageProps) {
-  const { user, isAuthenticated, isLoading } = useAuth();
+  const { user, isAuthenticated, isLoading, token } = useAuth();
   const router = useRouter();
   const t = useTranslations('EditRankingPage');
   const [formData, setFormData] = useState<RankingForm>({
@@ -37,9 +42,14 @@ export default function EditRankingPage({ params }: EditRankingPageProps) {
     category: '',
     subtitle: '',
     description: '',
+    organization: '',
+    // 英文欄位
+    categoryEn: '',
+    subtitleEn: '',
+    descriptionEn: '',
+    organizationEn: '',
     logoUrl: '',
     logoAlt: '',
-    organization: '',
     year: new Date().getFullYear(),
     isActive: true,
   });
@@ -73,9 +83,14 @@ export default function EditRankingPage({ params }: EditRankingPageProps) {
           category: ranking.category || '',
           subtitle: ranking.subtitle || '',
           description: ranking.description || '',
+          organization: ranking.organization || '',
+          // 英文欄位
+          categoryEn: ranking.categoryEn || '',
+          subtitleEn: ranking.subtitleEn || '',
+          descriptionEn: ranking.descriptionEn || '',
+          organizationEn: ranking.organizationEn || '',
           logoUrl: ranking.logoUrl || '',
           logoAlt: ranking.logoAlt || '',
-          organization: ranking.organization || '',
           year: ranking.year || new Date().getFullYear(),
           isActive: ranking.isActive,
         });
@@ -141,6 +156,7 @@ export default function EditRankingPage({ params }: EditRankingPageProps) {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(formData),
       });
@@ -263,6 +279,21 @@ export default function EditRankingPage({ params }: EditRankingPageProps) {
               />
             </div>
 
+            {/* 英文排名類別 */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                英文排名類別
+              </label>
+              <input
+                type="text"
+                name="categoryEn"
+                value={formData.categoryEn}
+                onChange={handleInputChange}
+                placeholder="例如：Learning Environment, West Japan Private Universities"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              />
+            </div>
+
             {/* 副標題 */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -274,6 +305,21 @@ export default function EditRankingPage({ params }: EditRankingPageProps) {
                 value={formData.subtitle}
                 onChange={handleInputChange}
                 placeholder="例如：（日本私立大學）"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              />
+            </div>
+
+            {/* 英文副標題 */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                英文副標題
+              </label>
+              <input
+                type="text"
+                name="subtitleEn"
+                value={formData.subtitleEn}
+                onChange={handleInputChange}
+                placeholder="例如：(Japan Private Universities)"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               />
             </div>
@@ -291,6 +337,21 @@ export default function EditRankingPage({ params }: EditRankingPageProps) {
                 placeholder="例如：THE、QS、US News"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 required
+              />
+            </div>
+
+            {/* 英文評鑑機構 */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                英文評鑑機構
+              </label>
+              <input
+                type="text"
+                name="organizationEn"
+                value={formData.organizationEn}
+                onChange={handleInputChange}
+                placeholder="例如：Times Higher Education, QS World University Rankings"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               />
             </div>
 
@@ -336,6 +397,21 @@ export default function EditRankingPage({ params }: EditRankingPageProps) {
                 onChange={handleInputChange}
                 rows={3}
                 placeholder="例如：2025年泰晤士高等教育日本大學排名"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              />
+            </div>
+
+            {/* 英文詳細描述 */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                英文詳細描述
+              </label>
+              <textarea
+                name="descriptionEn"
+                value={formData.descriptionEn}
+                onChange={handleInputChange}
+                rows={3}
+                placeholder="例如：Times Higher Education Japan University Rankings 2025"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               />
             </div>

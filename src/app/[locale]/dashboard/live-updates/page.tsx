@@ -243,7 +243,7 @@ export default function LiveUpdatesManagementPage() {
           <div>
             <h1 className="text-2xl font-bold text-gray-900">即時動態管理</h1>
             <p className="mt-2 text-sm text-gray-600">
-              管理網站上的即時動態資訊
+              管理網站上的即時動態資訊（支援中英雙語版本）
             </p>
           </div>
           <div className="mt-4 sm:mt-0">

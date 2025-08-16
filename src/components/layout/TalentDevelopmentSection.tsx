@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { useEffect, useState, useRef, useCallback } from 'react';
@@ -23,6 +23,7 @@ interface AlumniHighlight extends Alumni {
 
 export default function TalentDevelopmentSection() {
   const t = useTranslations('TalentDevelopment');
+  const locale = useLocale();
   const [alumni, setAlumni] = useState<AlumniHighlight[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -32,6 +33,14 @@ export default function TalentDevelopmentSection() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const scrollerRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
+
+  // 輔助函數：根據語言取得內容
+  const getLocalizedContent = useCallback(
+    (zhContent: string, enContent?: string | null) => {
+      return locale === 'en' && enContent ? enContent : zhContent;
+    },
+    [locale]
+  );
 
   // 載入校友資料
   const fetchAlumni = useCallback(async () => {
@@ -43,29 +52,75 @@ export default function TalentDevelopmentSection() {
       if (result.success && result.data) {
         // 將資料庫資料轉換為前台使用格式
         const formattedAlumni: AlumniHighlight[] = result.data.map(
-          (item: Alumni) => ({
-            ...item,
-            // 生成預設統計資料（可後續從資料庫擴展）
-            stats: [
-              { label: '資歷年資', value: '10+年', icon: '👔' },
-              { label: '影響力', value: '廣泛', icon: '🌟' },
-              { label: '專業領域', value: '領導', icon: '🎯' },
-            ],
-            // 生成預設詳細內容（可後續從資料庫擴展）
-            detailContent: {
-              fullTitle: `${item.name} - ${item.position}的卓越成就`,
-              overview: item.description,
-              achievements: item.achievements?.length
-                ? item.achievements
-                : [
-                    '在專業領域取得重要成就',
-                    '為組織發展做出重大貢獻',
-                    '積極參與社會公益活動',
-                    '持續推動產業創新發展',
-                  ],
-              impact: `${item.name}校友的卓越表現，不僅為母校增光，更為社會發展做出重要貢獻，是年輕學子學習的典範。`,
-            },
-          })
+          (item: Alumni) => {
+            const localizedName = getLocalizedContent(item.name, item.nameEn);
+            const localizedPosition = getLocalizedContent(
+              item.position,
+              item.positionEn
+            );
+            const localizedDescription = getLocalizedContent(
+              item.description,
+              item.descriptionEn
+            );
+            const localizedAchievements =
+              locale === 'en' && item.achievementsEn?.length
+                ? item.achievementsEn
+                : item.achievements;
+
+            return {
+              ...item,
+              // 使用本地化內容覆蓋顯示內容
+              name: localizedName,
+              position: localizedPosition,
+              description: localizedDescription,
+              achievements: localizedAchievements,
+              // 生成預設統計資料（可後續從資料庫擴展）
+              stats: [
+                {
+                  label: locale === 'en' ? 'Experience' : '資歷年資',
+                  value: '10+',
+                  icon: '👔',
+                },
+                {
+                  label: locale === 'en' ? 'Impact' : '影響力',
+                  value: locale === 'en' ? 'Extensive' : '廣泛',
+                  icon: '🌟',
+                },
+                {
+                  label: locale === 'en' ? 'Expertise' : '專業領域',
+                  value: locale === 'en' ? 'Leadership' : '領導',
+                  icon: '🎯',
+                },
+              ],
+              // 生成預設詳細內容（可後續從資料庫擴展）
+              detailContent: {
+                fullTitle:
+                  locale === 'en'
+                    ? `${localizedName} - Outstanding Achievements in ${localizedPosition}`
+                    : `${localizedName} - ${localizedPosition}的卓越成就`,
+                overview: localizedDescription,
+                achievements: localizedAchievements?.length
+                  ? localizedAchievements
+                  : locale === 'en'
+                    ? [
+                        'Achieved significant accomplishments in professional field',
+                        'Made major contributions to organizational development',
+                        'Actively participated in social welfare activities',
+                        'Continuously promoted industry innovation and development',
+                      ]
+                    : [
+                        '在專業領域取得重要成就',
+                        '為組織發展做出重大貢獻',
+                        '積極參與社會公益活動',
+                        '持續推動產業創新發展',
+                      ],
+                impact:
+                  locale === 'en'
+                    ? `The outstanding performance of alumnus ${localizedName} not only brings honor to our alma mater, but also makes important contributions to social development, serving as an exemplary model for young students to learn from.`
+                    : `${localizedName}校友的卓越表現，不僅為母校增光，更為社會發展做出重要貢獻，是年輕學子學習的典範。`,
+              },
+            };
+          }
         );
 
         setAlumni(formattedAlumni);
@@ -78,45 +133,18 @@ export default function TalentDevelopmentSection() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [locale, getLocalizedContent]);
 
   // 初始化載入資料
   useEffect(() => {
     fetchAlumni();
   }, [fetchAlumni]);
 
-  const handleIntersection = useCallback(
-    ([entry]: IntersectionObserverEntry[]) => {
-      if (entry.isIntersecting && !isVisible) {
-        setIsVisible(true);
-      }
-    },
-    [isVisible]
-  );
-
   useEffect(() => {
-    // 延遲初始化避免重複觸發
-    const timer = setTimeout(() => {
-      const sectionObserver = new IntersectionObserver(handleIntersection, {
-        threshold: 0.1,
-        rootMargin: '50px',
-      });
-
-      const currentSection = sectionRef.current;
-      if (currentSection) {
-        sectionObserver.observe(currentSection);
-      }
-
-      return () => {
-        clearTimeout(timer);
-        if (currentSection) {
-          sectionObserver.unobserve(currentSection);
-        }
-      };
-    }, 100);
-
-    return () => clearTimeout(timer);
-  }, [handleIntersection]);
+    // 為標題元素直接設置可見性，因為它們應該在頁面載入時就顯示
+    console.log('TalentDevelopment: 設置標題可見性');
+    setIsVisible(true);
+  }, []); // 直接設置為可見，不使用intersection observer
   // 檢查裝置
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 1024);
@@ -127,31 +155,66 @@ export default function TalentDevelopmentSection() {
 
   // 主要邏輯：垂直卷軸推動橫向輪播
   useEffect(() => {
-    if (isMobile) return;
+    if (isMobile || alumni.length === 0) return;
 
-    const section = sectionRef.current!;
-    const scroller = scrollerRef.current!;
+    const section = sectionRef.current;
+    const scroller = scrollerRef.current;
+
+    if (!section || !scroller) return;
 
     function onScroll() {
       const rect = section.getBoundingClientRect();
       const viewH = window.innerHeight;
-      const totalH = section.offsetHeight - viewH;
+      const sectionH = section.offsetHeight;
 
-      // 滾動尚未進入區塊 或 已超過區塊
-      if (rect.top > 0 || rect.bottom < viewH) return;
+      // 改善觸發條件：更寬泛的滾動範圍
+      if (rect.bottom < viewH * 0.1 || rect.top > viewH * 0.9) {
+        return;
+      }
 
-      // 捲動進度 0~1
-      const progress = Math.min(Math.max(-rect.top / totalH, 0), 1);
+      // 優化進度計算：確保在整個section範圍內都有滾動效果
+      let progress = 0;
+      if (rect.top <= 0) {
+        // section已完全進入視野，基於已滾動的距離計算進度
+        const scrolledIntoSection = Math.abs(rect.top);
+        const totalScrollableDistance = sectionH - viewH;
+        progress = Math.min(scrolledIntoSection / totalScrollableDistance, 1);
+      }
+
+      // 確保進度在有效範圍內
+      progress = Math.max(0, Math.min(progress, 1));
+
+      // 水平滾動距離計算
       const maxScrollLeft = scroller.scrollWidth - scroller.clientWidth;
+      const targetScrollLeft = progress * maxScrollLeft;
 
-      scroller.scrollLeft = progress * maxScrollLeft;
+      // 平滑滾動到目標位置
+      scroller.scrollTo({
+        left: targetScrollLeft,
+        behavior: 'auto', // 使用瞬間滾動確保跟隨垂直滾動
+      });
     }
 
-    window.addEventListener('scroll', onScroll, { passive: true });
-    // 初始
+    // 使用 requestAnimationFrame 優化滾動性能
+    let ticking = false;
+    function handleScroll() {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          onScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    // 初始調用
     onScroll();
-    return () => window.removeEventListener('scroll', onScroll);
-  }, [isMobile]);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [isMobile, alumni.length]);
 
   // 錯誤狀態
   if (error) {
@@ -238,15 +301,17 @@ export default function TalentDevelopmentSection() {
   // ----------- 手機版 ----------
   if (isMobile) {
     return (
-      <section ref={sectionRef} className="relative py-20">
-        <div className="text-center mb-12">
+      <section ref={sectionRef} className="relative py-50">
+        <div className="text-center mt-10 mb-10">
           <div
             className={`title-entrance text-2xl md:text-4xl lg:text-5xl font-bold text-primary-700 mb-4  ${isVisible ? 'visible' : ''}`}
           >
-            <span className="text-primary-600 font-medium">傑出校友</span>
+            <span className="text-primary-600 font-medium">
+              {t('outstanding_alumni')}
+            </span>
           </div>
           <h2
-            className={`title-entrance text-base md:text-xl text-gray-700 max-w-3xl mx-auto px-4 md:px-0 ${isVisible ? 'visible' : ''}`}
+            className={`title-entrance text-base md:text-xl text-primary-100 max-w-3xl mx-auto px-4 md:px-0 ${isVisible ? 'visible' : ''}`}
           >
             {t('title', { defaultValue: '校友成就展現教育價值' })}
           </h2>
@@ -258,6 +323,7 @@ export default function TalentDevelopmentSection() {
                 <HighlightCard
                   highlight={highlight}
                   openDetail={setSelectedHighlight}
+                  locale={locale}
                 />
               </div>
             ))}
@@ -267,6 +333,7 @@ export default function TalentDevelopmentSection() {
             <DetailModal
               highlight={selectedHighlight}
               close={() => setSelectedHighlight(null)}
+              locale={locale}
             />
           )}
         </div>
@@ -303,14 +370,30 @@ export default function TalentDevelopmentSection() {
         className={`relative`}
         style={{ height: `${Math.ceil(alumni.length / 3) * 100}vh` }}
       >
-        <div className="text-center mt-30 mb-[-100px]">
+        <div className="text-center mt-50 mb-[-200px]">
           <div
-            className={`title-entrance text-2xl md:text-4xl lg:text-5xl font-bold text-primary-700 mb-4  ${isVisible ? 'visible' : ''}`}
+            className={`title-entrance text-2xl md:text-4xl lg:text-5xl font-bold text-primary-700 mb-4 ${isVisible ? 'visible' : ''}`}
+            style={{
+              opacity: isVisible ? 1 : 0,
+              transform: isVisible
+                ? 'translateY(-100px) scale(1)'
+                : 'translateY(0px) scale(0.7)',
+              transition: 'all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+            }}
           >
-            <span className="text-primary-600 font-medium">傑出校友</span>
+            <span className="text-primary-600 font-medium">
+              {t('outstanding_alumni')}
+            </span>
           </div>
           <h2
             className={`title-entrance text-base md:text-xl text-primary-100 max-w-3xl mx-auto px-4 md:px-0 ${isVisible ? 'visible' : ''}`}
+            style={{
+              opacity: isVisible ? 1 : 0,
+              transform: isVisible
+                ? 'translateY(-100px) scale(1)'
+                : 'translateY(0px) scale(0.7)',
+              transition: 'all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+            }}
           >
             {t('title', { defaultValue: '校友成就展現教育價值' })}
           </h2>
@@ -320,9 +403,10 @@ export default function TalentDevelopmentSection() {
         <div className="sticky top-0 left-0 w-full h-screen overflow-y-hidden z-10">
           <div
             ref={scrollerRef}
-            className="flex h-full flex-nowrap overflow-x-auto overflow-y-hidden snap-x snap-mandatory scroll-smooth hide-scrollbar"
+            className="flex h-full flex-nowrap overflow-x-hidden overflow-y-hidden hide-scrollbar"
             style={{
-              scrollSnapType: 'x mandatory',
+              // 移除 snap scroll 避免干擾手動控制
+              scrollBehavior: 'auto',
             }}
           >
             {Array.from(
@@ -337,6 +421,7 @@ export default function TalentDevelopmentSection() {
                     key={pageIndex}
                     alumni={pageAlumni}
                     openDetail={setSelectedHighlight}
+                    locale={locale}
                   />
                 );
               }
@@ -348,6 +433,7 @@ export default function TalentDevelopmentSection() {
           <DetailModal
             highlight={selectedHighlight}
             close={() => setSelectedHighlight(null)}
+            locale={locale}
           />
         )}
       </section>
@@ -359,14 +445,20 @@ export default function TalentDevelopmentSection() {
 function AlumniPageCard({
   alumni,
   openDetail,
+  locale,
 }: {
   alumni: AlumniHighlight[];
   openDetail: (h: AlumniHighlight) => void;
+  locale: string;
 }) {
   return (
     <div
-      className="flex-shrink-0 w-screen h-screen flex items-center justify-center min-w-[100vw] flex-none"
-      style={{ scrollSnapAlign: 'start' }}
+      className="flex-shrink-0 w-screen h-screen flex items-center justify-center"
+      style={{
+        minWidth: '100vw',
+        width: '100vw',
+        // 移除 scrollSnapAlign 避免干擾
+      }}
     >
       <div className="container mx-auto px-4">
         <div className="h-full max-h-[90vh] flex flex-col justify-center py-8">
@@ -423,7 +515,9 @@ function AlumniPageCard({
                     <div className="pt-2">
                       <button className="w-full px-4 py-3 bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform transition-all duration-300 group-hover:scale-105 relative overflow-hidden">
                         <span className="relative z-10 flex items-center justify-center space-x-2">
-                          <span>了解更多</span>
+                          <span>
+                            {locale === 'en' ? 'Learn More' : '了解更多'}
+                          </span>
                           <svg
                             className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1"
                             fill="none"
@@ -457,9 +551,11 @@ function AlumniPageCard({
 function HighlightCard({
   highlight,
   openDetail,
+  locale,
 }: {
   highlight: AlumniHighlight;
   openDetail: (h: AlumniHighlight) => void;
+  locale: string;
 }) {
   return (
     <div
@@ -510,7 +606,9 @@ function HighlightCard({
           <div className="pt-2">
             <button className="w-full px-4 py-3 bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform transition-all duration-300 group-hover:scale-[1.02] relative overflow-hidden">
               <span className="relative z-10 flex items-center justify-center space-x-3">
-                <span className="text-base">了解更多</span>
+                <span className="text-base">
+                  {locale === 'en' ? 'Learn More' : '了解更多'}
+                </span>
                 <svg
                   className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1"
                   fill="none"
@@ -539,9 +637,11 @@ function HighlightCard({
 function DetailModal({
   highlight,
   close,
+  locale,
 }: {
   highlight: AlumniHighlight;
   close: () => void;
+  locale: string;
 }) {
   return (
     <motion.div
@@ -595,7 +695,7 @@ function DetailModal({
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
             <div className="absolute top-4 left-4">
               <span className="inline-block px-4 py-2 bg-primary-600/90 backdrop-blur-sm text-white text-sm font-medium rounded-full">
-                人才發展
+                {locale === 'en' ? 'Talent Development' : '人才發展'}
               </span>
             </div>
           </div>
@@ -609,7 +709,7 @@ function DetailModal({
             </div>
             <div>
               <h3 className="text-2xl font-bold text-gray-800 mb-4">
-                主要成就
+                {locale === 'en' ? 'Major Achievements' : '主要成就'}
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {(
@@ -636,7 +736,7 @@ function DetailModal({
             </div>
             <div>
               <h3 className="text-2xl font-bold text-gray-800 mb-4">
-                重要數據
+                {locale === 'en' ? 'Key Statistics' : '重要數據'}
               </h3>
               <div className="grid grid-cols-3 gap-6">
                 {(highlight.stats || []).map((stat, index) => (
@@ -659,7 +759,9 @@ function DetailModal({
               </div>
             </div>
             <div className="bg-gradient-to-r from-primary-600 to-primary-700 text-white p-6 rounded-xl">
-              <h3 className="text-xl font-bold mb-3">影響與意義</h3>
+              <h3 className="text-xl font-bold mb-3">
+                {locale === 'en' ? 'Impact & Significance' : '影響與意義'}
+              </h3>
               <p className="leading-relaxed">
                 {highlight.detailContent?.impact ||
                   `${highlight.name || highlight.title}校友的卓越表現，為母校增光，也為社會發展做出重要貢獻。`}

@@ -1,26 +1,46 @@
 'use client';
 
-// import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { useScrollState } from '@/hooks/useScrollState';
 import { usePublishedLiveUpdates } from '@/hooks/useLiveUpdates';
 
-// 格式化日期函數
-const formatDate = (dateInput: string | Date): string => {
+// 格式化日期函數 - 支援多語系
+const formatDate = (
+  dateInput: string | Date,
+  locale: string = 'zh'
+): string => {
   try {
     const date = dateInput instanceof Date ? dateInput : new Date(dateInput);
-    return isNaN(date.getTime())
-      ? '無效日期'
-      : date.toLocaleDateString('zh-TW');
+    if (isNaN(date.getTime())) {
+      return locale === 'zh' ? '無效日期' : 'Invalid Date';
+    }
+
+    const localeCode = locale === 'zh' ? 'zh-TW' : 'en-US';
+    return date.toLocaleDateString(localeCode);
   } catch {
-    return '無效日期';
+    return locale === 'zh' ? '無效日期' : 'Invalid Date';
   }
 };
 
+// 取得本地化內容函數
+const getLocalizedContent = (
+  item: any,
+  field: 'title' | 'content',
+  locale: string
+) => {
+  const englishField = field === 'title' ? 'titleEn' : 'contentEn';
+  if (locale === 'en' && item[englishField]) {
+    return item[englishField];
+  }
+  return item[field]; // 回退到中文版本
+};
+
 export default function LiveUpdatesSection() {
-  // const t = useTranslations('LiveUpdates');
+  const t = useTranslations('LiveUpdates');
+  const locale = useLocale();
   const isScrolling = useScrollState();
 
   // 即時動態數據，增加防抖以避免頻繁請求
@@ -95,14 +115,14 @@ export default function LiveUpdatesSection() {
           </svg>
         </div>
         <h3 className="text-lg font-semibold text-red-800 mb-2">
-          載入即時動態失敗
+          {t('loading_failed')}
         </h3>
         <p className="text-red-600 mb-4">{error}</p>
         <button
           onClick={refetch}
           className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
         >
-          重新載入
+          {t('reload')}
         </button>
       </div>
     </div>
@@ -131,12 +151,10 @@ export default function LiveUpdatesSection() {
                 </svg>
               </div>
               <h3 className="text-lg font-medium text-gray-600 mb-2">
-                暫無即時動態
+                {t('no_updates')}
               </h3>
               <p className="text-gray-500 text-sm">
-                目前沒有發佈的即時動態內容
-                <br />
-                請稍後再查看或關注我們的最新動態
+                {t('no_updates_description')}
               </p>
             </div>
           </div>
@@ -195,23 +213,31 @@ export default function LiveUpdatesSection() {
                                   : new Date(
                                       prevLiveUpdates[currentIndex]?.date ||
                                         new Date()
-                                    )
+                                    ),
+                                locale
                               )}
                             </span>
                           </div>
                           <div className="bg-primary-100 text-primary-700 px-3 py-1 rounded-full text-xs font-medium">
-                            即時動態
+                            {t('section_title')}
                           </div>
                         </div>
                         <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-primary-600 transition-colors duration-300 leading-tight">
-                          {prevLiveUpdates[currentIndex]?.title || '載入中...'}
+                          {getLocalizedContent(
+                            prevLiveUpdates[currentIndex],
+                            'title',
+                            locale
+                          ) || t('loading')}
                         </h3>
                         <p className="text-gray-600 text-base leading-relaxed mb-6 line-clamp-3">
-                          {prevLiveUpdates[currentIndex]?.content ||
-                            '內容載入中...'}
+                          {getLocalizedContent(
+                            prevLiveUpdates[currentIndex],
+                            'content',
+                            locale
+                          ) || t('loading')}
                         </p>
                         <div className="flex items-center text-primary-600 font-medium group-hover:text-primary-700 group-hover:translate-x-2 transition-all duration-300">
-                          查看完整動態
+                          {t('view_full')}
                           <svg
                             className="w-5 h-5 ml-2"
                             fill="none"
@@ -246,7 +272,7 @@ export default function LiveUpdatesSection() {
                       ? 'bg-primary-600 scale-150'
                       : `bg-gray-300 ${isScrolling ? '' : 'hover:bg-gray-400'}`
                   }`}
-                  aria-label={`切換到第 ${index + 1} 則動態`}
+                  aria-label={t('switch_indicator', { index: index + 1 })}
                 />
               ))}
             </div>

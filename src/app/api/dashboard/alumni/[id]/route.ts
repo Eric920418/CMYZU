@@ -118,8 +118,12 @@ export async function PUT(
       name: body.name,
       position: body.position,
       description: body.description,
+      nameEn: body.nameEn,
+      positionEn: body.positionEn,
+      descriptionEn: body.descriptionEn,
       imageUrl: body.imageUrl,
       achievements: body.achievements,
+      achievementsEn: body.achievementsEn,
       isActive: body.isActive,
     });
 

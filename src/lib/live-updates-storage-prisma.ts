@@ -13,6 +13,9 @@ export interface LiveUpdateWithAuthor extends LiveUpdate {
 export async function createLiveUpdate(data: {
   title: string;
   content: string;
+  // 英文欄位
+  titleEn?: string;
+  contentEn?: string;
   priority?: LiveUpdatePriority;
   published?: boolean;
   tags?: string[];
@@ -22,6 +25,9 @@ export async function createLiveUpdate(data: {
     data: {
       title: data.title,
       content: data.content,
+      // 英文欄位
+      titleEn: data.titleEn,
+      contentEn: data.contentEn,
       priority: data.priority || 'MEDIUM',
       published: data.published || false,
       tags: data.tags || [],

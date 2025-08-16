@@ -11,6 +11,9 @@ export default function CreateLiveUpdatePage() {
   const [formData, setFormData] = useState({
     title: '',
     content: '',
+    // 英文欄位
+    titleEn: '',
+    contentEn: '',
     priority: 'medium' as const,
     tags: [] as string[],
     isPublished: false,
@@ -62,6 +65,15 @@ export default function CreateLiveUpdatePage() {
       newErrors.content = '內容不能超過 2000 個字元';
     }
 
+    // 英文欄位驗證（可選，但有長度限制）
+    if (formData.titleEn && formData.titleEn.length > 200) {
+      newErrors.titleEn = '英文標題不能超過 200 個字元';
+    }
+
+    if (formData.contentEn && formData.contentEn.length > 2000) {
+      newErrors.contentEn = '英文內容不能超過 2000 個字元';
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -79,6 +91,9 @@ export default function CreateLiveUpdatePage() {
       const response = await dashboardAPI.liveUpdates.create({
         title: formData.title.trim(),
         content: formData.content.trim(),
+        // 英文欄位（如果有內容的話）
+        titleEn: formData.titleEn.trim() || undefined,
+        contentEn: formData.contentEn.trim() || undefined,
         priority: formData.priority,
         tags: formData.tags,
         date: new Date(),
@@ -112,6 +127,9 @@ export default function CreateLiveUpdatePage() {
       const response = await dashboardAPI.liveUpdates.create({
         title: formData.title.trim(),
         content: formData.content.trim() || '(草稿)',
+        // 英文欄位（如果有內容的話）
+        titleEn: formData.titleEn.trim() || undefined,
+        contentEn: formData.contentEn.trim() || undefined,
         priority: formData.priority,
         tags: formData.tags,
         date: new Date(),
@@ -193,6 +211,34 @@ export default function CreateLiveUpdatePage() {
                 )}
                 <p className="mt-1 text-xs text-gray-500">
                   {formData.title.length}/200 字元
+                </p>
+              </div>
+
+              {/* 英文標題 */}
+              <div>
+                <label
+                  htmlFor="titleEn"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  English Title{' '}
+                  <span className="text-gray-400">(Optional)</span>
+                </label>
+                <input
+                  type="text"
+                  id="titleEn"
+                  value={formData.titleEn}
+                  onChange={(e) => handleInputChange('titleEn', e.target.value)}
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
+                    errors.titleEn ? 'border-red-300' : 'border-gray-300'
+                  }`}
+                  placeholder="Enter English title..."
+                  maxLength={200}
+                />
+                {errors.titleEn && (
+                  <p className="mt-1 text-sm text-red-600">{errors.titleEn}</p>
+                )}
+                <p className="mt-1 text-xs text-gray-500">
+                  {formData.titleEn.length}/200 characters
                 </p>
               </div>
 
@@ -306,6 +352,38 @@ export default function CreateLiveUpdatePage() {
                 )}
                 <p className="mt-1 text-xs text-gray-500">
                   {formData.content.length}/2000 字元
+                </p>
+              </div>
+
+              {/* 英文內容 */}
+              <div>
+                <label
+                  htmlFor="contentEn"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  English Content{' '}
+                  <span className="text-gray-400">(Optional)</span>
+                </label>
+                <textarea
+                  id="contentEn"
+                  rows={8}
+                  value={formData.contentEn}
+                  onChange={(e) =>
+                    handleInputChange('contentEn', e.target.value)
+                  }
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
+                    errors.contentEn ? 'border-red-300' : 'border-gray-300'
+                  }`}
+                  placeholder="Enter English content..."
+                  maxLength={2000}
+                />
+                {errors.contentEn && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.contentEn}
+                  </p>
+                )}
+                <p className="mt-1 text-xs text-gray-500">
+                  {formData.contentEn.length}/2000 characters
                 </p>
               </div>
 

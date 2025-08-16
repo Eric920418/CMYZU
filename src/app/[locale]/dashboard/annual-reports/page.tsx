@@ -525,7 +525,9 @@ function CreateReportModal({
   const [formData, setFormData] = useState({
     year: new Date().getFullYear(),
     title: '',
+    titleEn: '',
     description: '',
+    descriptionEn: '',
     fileUrl: '',
     fileName: '',
     fileSize: '',
@@ -542,7 +544,9 @@ function CreateReportModal({
       const response = await dashboardAPI.annualReports.create({
         year: formData.year,
         title: formData.title,
+        titleEn: formData.titleEn || undefined,
         description: formData.description || undefined,
+        descriptionEn: formData.descriptionEn || undefined,
         fileUrl: formData.fileUrl,
         fileName: formData.fileName,
         fileSize: formData.fileSize ? parseInt(formData.fileSize) : undefined,
@@ -557,7 +561,9 @@ function CreateReportModal({
         setFormData({
           year: new Date().getFullYear(),
           title: '',
+          titleEn: '',
           description: '',
+          descriptionEn: '',
           fileUrl: '',
           fileName: '',
           fileSize: '',
@@ -628,6 +634,21 @@ function CreateReportModal({
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
+                英文標題
+              </label>
+              <input
+                type="text"
+                placeholder="例如：2023 Annual Report"
+                value={formData.titleEn}
+                onChange={(e) =>
+                  setFormData({ ...formData, titleEn: e.target.value })
+                }
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
                 描述
               </label>
               <textarea
@@ -636,6 +657,21 @@ function CreateReportModal({
                 value={formData.description}
                 onChange={(e) =>
                   setFormData({ ...formData, description: e.target.value })
+                }
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                英文描述
+              </label>
+              <textarea
+                rows={3}
+                placeholder="Brief description of this annual report..."
+                value={formData.descriptionEn}
+                onChange={(e) =>
+                  setFormData({ ...formData, descriptionEn: e.target.value })
                 }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
@@ -726,7 +762,9 @@ function EditReportModal({
   const [formData, setFormData] = useState({
     year: report.year,
     title: report.title,
+    titleEn: report.titleEn || '',
     description: report.description || '',
+    descriptionEn: report.descriptionEn || '',
     fileUrl: report.fileUrl,
     fileName: report.fileName,
     fileSize: report.fileSize?.toString() || '',
@@ -744,7 +782,9 @@ function EditReportModal({
       const response = await dashboardAPI.annualReports.update(report.id, {
         year: formData.year,
         title: formData.title,
+        titleEn: formData.titleEn || undefined,
         description: formData.description || undefined,
+        descriptionEn: formData.descriptionEn || undefined,
         fileUrl: formData.fileUrl,
         fileName: formData.fileName,
         fileSize: formData.fileSize ? parseInt(formData.fileSize) : undefined,
@@ -819,6 +859,21 @@ function EditReportModal({
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
+                英文標題
+              </label>
+              <input
+                type="text"
+                placeholder="例如：2023 Annual Report"
+                value={formData.titleEn}
+                onChange={(e) =>
+                  setFormData({ ...formData, titleEn: e.target.value })
+                }
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
                 描述
               </label>
               <textarea
@@ -826,6 +881,21 @@ function EditReportModal({
                 value={formData.description}
                 onChange={(e) =>
                   setFormData({ ...formData, description: e.target.value })
+                }
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                英文描述
+              </label>
+              <textarea
+                rows={3}
+                placeholder="Brief description of this annual report..."
+                value={formData.descriptionEn}
+                onChange={(e) =>
+                  setFormData({ ...formData, descriptionEn: e.target.value })
                 }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />

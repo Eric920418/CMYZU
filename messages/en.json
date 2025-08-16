@@ -49,6 +49,17 @@
     "career_desc": "Comprehensive career guidance and industry-academia cooperation to ensure student employment success",
     "learn_more": "Learn More Features"
   },
+  "LiveUpdates": {
+    "section_title": "Live Updates",
+    "loading": "Loading...",
+    "no_updates": "No Live Updates",
+    "no_updates_description": "No published live updates at the moment. Please check back later or follow our latest updates",
+    "loading_failed": "Failed to Load Live Updates",
+    "reload": "Reload",
+    "view_full": "View Full Update",
+    "invalid_date": "Invalid Date",
+    "switch_indicator": "Switch to update {index}"
+  },
   "News": {
     "title": "Latest News",
     "description": "Stay updated with campus activities and important announcements",
@@ -71,7 +82,13 @@
     "category_scholarship": "Scholarships",
     "category_alumni": "Alumni",
     "read_more": "Read More",
-    "view_all": "View All News"
+    "view_all": "View All News",
+    "news_type": "News",
+    "no_news": "No News Available",
+    "no_news_description": "Currently no published news content. Please check back later or follow our updates",
+    "loading_failed": "Failed to load news",
+    "reload": "Reload",
+    "invalid_date": "Invalid Date"
   },
   "Explore": {
     "title": "Explore CMYZU Business School",
@@ -125,7 +142,8 @@
     "library": "Library",
     "itCenter": "IT Center",
     "career": "Career Services",
-    "international": "International Affairs"
+    "international": "International Affairs",
+    "description": "Providing comprehensive academic information, educational resources, and student services to create an excellent learning environment."
   },
   "Common": {
     "loading": "Loading...",
@@ -177,6 +195,17 @@
     "system-info": "System Information",
     "user-management": "User Management",
     "user-management-desc": "Manage system users",
+    "backup-status": "Backup Status",
+    "yesterday-backup": "Yesterday's Backup",
+    "admin-tools": "Admin Tools",
+    "admin-tools-desc": "System administration tools",
+    "system-settings": "System Settings",
+    "system-status": "System Status",
+    "website-status": "Website Status",
+    "running-normally": "Running Normally",
+    "database": "Database",
+    "connection-normal": "Connection Normal",
+    "dashboard-desc": "Manage your website content to make your school website even better",
     "coming-soon": "Coming Soon"
   },
   "ChangePasswordPage": {
@@ -201,11 +230,13 @@
   "MoreHighlights": {
     "title": "More Exciting Highlights",
     "description": "Follow our official social media channels to stay updated with the latest campus news and exciting moments.",
+    "official_channel": "CMYZU Official Channel",
     "view_more": "View More Highlights"
   },
   "TalentDevelopment": {
     "title": "Cultivating the Most International Business Professionals",
     "description": "We are committed to cultivating business professionals with global vision, practical capabilities, and innovative spirit. Through an international teaching environment and rich internship opportunities, we build professional competencies for students to succeed on the world stage.",
+    "outstanding_alumni": "Outstanding Alumni",
     "success_stories_title": "Alumni Success Stories",
     "success_stories_description": "Our graduates shine in top companies around the world, and their success proves the excellence of our educational quality.",
     "apply_now": "Apply Now",
@@ -229,6 +260,97 @@
   },
   "FeaturedResources": {
     "title": "Featured Resources",
-    "description": "Explore our featured resources and services to provide comprehensive support for your learning and development."
+    "description": "Explore our featured resources and services to provide comprehensive support for your learning and development.",
+    "loading_error": "Error loading featured resources",
+    "no_resources": "No featured resources available",
+    "learn_more": "Learn More",
+    "hint_text": "💡 Tip: Click 'Learn More' to view detailed service content and application process"
+  },
+  "WorldMap": {
+    "title": "Global Partner Schools Distribution",
+    "subtitle": "Educational cooperation network across nearly 30 countries worldwide",
+    "taiwan": "Taiwan",
+    "exchange_students": "exchange students",
+    "loading": "Loading map data...",
+    "partner_schools": "Partner Schools",
+    "students": "Exchange Students",
+    "countries": "Partner Countries",
+    "continents": "Partner Continents",
+    "legend_partner_location": "Partner School Locations",
+    "legend_taiwan_location": "Taiwan Location",
+    "legend_connection": "Partnership Connections",
+    "legend_size_hint": "Circle size represents number of exchange students"
+  },
+  "FeaturedResourcesManagement": {
+    "title": "Featured Resources Management",
+    "description": "Manage website featured resources content",
+    "add_new": "Add New Featured Resource",
+    "edit": "Edit",
+    "delete": "Delete",
+    "edit_resource": "Edit Featured Resource",
+    "add_resource": "Add Featured Resource",
+    "search_placeholder": "Search featured resources...",
+    "title_field": "Title",
+    "description_field": "Description",
+    "category_field": "Category",
+    "image_url_field": "Image URL",
+    "order_field": "Display Order",
+    "status_field": "Status",
+    "active": "Active",
+    "inactive": "Inactive",
+    "english_content": "English Content (Optional)",
+    "english_title": "English Title",
+    "english_description": "English Description",
+    "english_category": "English Category",
+    "chinese_content": "Chinese Content *",
+    "cancel": "Cancel",
+    "create": "Create",
+    "update": "Update",
+    "processing": "Processing...",
+    "delete_confirm": "Are you sure you want to delete this featured resource?",
+    "no_resources_found": "No featured resources found",
+    "adjust_search": "Try adjusting your search criteria",
+    "create_first": "Start creating your first featured resource",
+    "order_label": "Order",
+    "bilingual_note": "English fields are optional. If left empty, Chinese content will be displayed for English users."
+  },
+  "RankingsPage": {
+    "title": "Rankings Management",
+    "description": "Manage school ranking data and related information",
+    "add-new": "Add New Ranking",
+    "add_ranking": "Add Ranking",
+    "edit_ranking": "Edit Ranking",
+    "delete_ranking": "Delete Ranking",
+    "ranking_title": "Ranking Title",
+    "ranking_description": "Ranking Description",
+    "ranking_position": "Ranking Position",
+    "ranking_year": "Ranking Year",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm_delete": "Are you sure you want to delete this ranking?",
+    "loading": "Loading...",
+    "error_loading": "Error loading ranking data",
+    "success_add": "Ranking added successfully",
+    "success_update": "Ranking updated successfully",
+    "success_delete": "Ranking deleted successfully",
+    "no-rankings": "No rankings have been created yet",
+    "create-first": "Create your first ranking"
+  },
+  "CreateRankingPage": {
+    "title": "Add New Ranking",
+    "description": "Add new authoritative ranking information for the school"
+  },
+  "Rankings": {
+    "title": "One of the World's Top Universities",
+    "description": "The following information is current as of May 2025.",
+    "loading": "Loading ranking data...",
+    "loading_error": "Error loading ranking data: ",
+    "no_rankings": "No ranking data available",
+    "bottom_note": "Ranking information is sourced from major authoritative educational evaluation agencies, including Times Higher Education World University Rankings (THE), QS World University Rankings, and other internationally recognized evaluation systems. All data is regularly updated to ensure accuracy and timeliness.",
+    "map_loading": "Loading map..."
+  },
+  "EditRankingPage": {
+    "title": "Edit Ranking",
+    "description": "Modify school authoritative ranking information"
   }
 }

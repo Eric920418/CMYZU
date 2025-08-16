@@ -77,9 +77,14 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       category,
       subtitle,
       description,
+      organization,
+      // 英文欄位
+      categoryEn,
+      subtitleEn,
+      descriptionEn,
+      organizationEn,
       logoUrl,
       logoAlt,
-      organization,
       year,
       isActive,
     } = body;
@@ -104,6 +109,20 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       );
     }
 
+    // 檢查啟用排名數量限制（最多三個）
+    if (isActive && !existingRanking.isActive) {
+      const activeRankingsCount = await prisma.ranking.count({
+        where: { isActive: true },
+      });
+
+      if (activeRankingsCount >= 3) {
+        return NextResponse.json(
+          { message: '最多只能有三個啟用的排名項目，請先停用其他排名' },
+          { status: 400 }
+        );
+      }
+    }
+
     const ranking = await prisma.ranking.update({
       where: { id: params.id },
       data: {
@@ -111,9 +130,14 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
         category,
         subtitle: subtitle || null,
         description: description || null,
+        organization,
+        // 英文欄位
+        categoryEn: categoryEn || null,
+        subtitleEn: subtitleEn || null,
+        descriptionEn: descriptionEn || null,
+        organizationEn: organizationEn || null,
         logoUrl: logoUrl || null,
         logoAlt: logoAlt || null,
-        organization,
         year,
         isActive: Boolean(isActive),
       },
@@ -153,6 +177,20 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
         { message: '找不到該排名項目' },
         { status: 404 }
       );
+    }
+
+    // 檢查啟用排名數量限制（最多三個）
+    if (body.isActive && !existingRanking.isActive) {
+      const activeRankingsCount = await prisma.ranking.count({
+        where: { isActive: true },
+      });
+
+      if (activeRankingsCount >= 3) {
+        return NextResponse.json(
+          { message: '最多只能有三個啟用的排名項目，請先停用其他排名' },
+          { status: 400 }
+        );
+      }
     }
 
     const ranking = await prisma.ranking.update({

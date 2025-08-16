@@ -1,16 +1,5 @@
 import { useState, useEffect } from 'react';
-
-interface FeaturedResource {
-  id: string;
-  title: string;
-  description: string;
-  image: string;
-  category: string;
-  backgroundColor: string;
-  textColor: string;
-  isActive: boolean;
-  order: number;
-}
+import { FeaturedResource } from '@/types/dashboard';
 
 export function useFeaturedResources() {
   const [resources, setResources] = useState<FeaturedResource[]>([]);

@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { useAnnualReports } from '@/hooks/useAnnualReports';
@@ -8,6 +8,7 @@ import { useAnnualReports } from '@/hooks/useAnnualReports';
 // 電子報專區 - 用戶電子郵件訂閱功能
 export default function NewsletterSection() {
   const t = useTranslations('Newsletter');
+  const locale = useLocale(); // 獲取當前語言
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(false);
@@ -351,7 +352,12 @@ export default function NewsletterSection() {
                               d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                             />
                           </svg>
-                          <span>{report.title}</span>
+                          <span>
+                            {/* 多語言標題顯示邏輯：英文優先顯示英文標題，中文顯示中文標題 */}
+                            {locale === 'en' && report.titleEn
+                              ? report.titleEn
+                              : report.title}
+                          </span>
                         </a>
                       );
                     })

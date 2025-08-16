@@ -133,9 +133,13 @@ export async function PUT(
       title: body.title,
       content: body.content,
       excerpt: body.excerpt,
+      titleEn: body.titleEn,
+      contentEn: body.contentEn,
+      excerptEn: body.excerptEn,
       imageUrl: body.imageUrl,
       published: body.published,
       featured: body.featured,
+      publishedAt: body.publishedAt,
     });
 
     if (!updatedNews) {

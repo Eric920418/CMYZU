@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { FeaturedResource } from '@/types/dashboard';
-import {
-  getFeaturedResources,
-  createFeaturedResource,
-} from '@/data/featured-resources';
+import { prisma } from '@/lib/prisma';
 
 // GET - 獲取特色資源列表
 export async function GET(request: NextRequest) {
@@ -15,38 +12,63 @@ export async function GET(request: NextRequest) {
     const sortOrder = searchParams.get('sortOrder') || 'asc';
     const search = searchParams.get('search') || '';
 
-    // 過濾搜尋
-    const filteredResources = getFeaturedResources().filter(
-      (resource) =>
-        search === '' ||
-        resource.title.toLowerCase().includes(search.toLowerCase()) ||
-        resource.description.toLowerCase().includes(search.toLowerCase()) ||
-        resource.category.toLowerCase().includes(search.toLowerCase())
-    );
+    // 從資料庫獲取資料
+    const whereClause = search
+      ? {
+          OR: [
+            { title: { contains: search, mode: 'insensitive' as const } },
+            { description: { contains: search, mode: 'insensitive' as const } },
+            { category: { contains: search, mode: 'insensitive' as const } },
+            { titleEn: { contains: search, mode: 'insensitive' as const } },
+            {
+              descriptionEn: { contains: search, mode: 'insensitive' as const },
+            },
+            { categoryEn: { contains: search, mode: 'insensitive' as const } },
+          ],
+        }
+      : {};
 
-    // 排序
-    filteredResources.sort((a, b) => {
-      const aValue = a[sortBy as keyof FeaturedResource];
-      const bValue = b[sortBy as keyof FeaturedResource];
-
-      if (aValue < bValue) return sortOrder === 'asc' ? -1 : 1;
-      if (aValue > bValue) return sortOrder === 'asc' ? 1 : -1;
-      return 0;
+    const totalCount = await prisma.featuredResource.count({
+      where: whereClause,
     });
 
-    // 分頁
-    const startIndex = (page - 1) * pageSize;
-    const endIndex = startIndex + pageSize;
-    const paginatedResources = filteredResources.slice(startIndex, endIndex);
+    const rawResources = await prisma.featuredResource.findMany({
+      where: whereClause,
+      orderBy: {
+        [sortBy]: sortOrder as 'asc' | 'desc',
+      },
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+    });
+
+    // 轉換資料格式
+    const paginatedResources: FeaturedResource[] = rawResources.map(
+      (resource) => ({
+        id: resource.id,
+        title: resource.title,
+        description: resource.description,
+        titleEn: resource.titleEn,
+        descriptionEn: resource.descriptionEn,
+        image: resource.imageUrl || '',
+        category: resource.category,
+        categoryEn: resource.categoryEn,
+        backgroundColor: resource.bgColor,
+        textColor: 'text-white', // 預設值
+        isActive: resource.enabled,
+        order: resource.order,
+        createdAt: resource.createdAt,
+        updatedAt: resource.updatedAt,
+      })
+    );
 
     return NextResponse.json({
       success: true,
       data: paginatedResources,
       pagination: {
         current: page,
-        total: Math.ceil(filteredResources.length / pageSize),
+        total: Math.ceil(totalCount / pageSize),
         pageSize,
-        totalItems: filteredResources.length,
+        totalItems: totalCount,
       },
     });
   } catch (error) {
@@ -77,21 +99,44 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 在實際專案中，這裡應該保存到資料庫
-    const createdResource = createFeaturedResource({
-      title: body.title,
-      description: body.description,
-      category: body.category,
-      image: body.image,
-      backgroundColor: body.backgroundColor,
-      textColor: body.textColor,
-      isActive: body.isActive,
-      order: body.order || getFeaturedResources().length + 1,
+    // 保存到資料庫
+    const createdResource = await prisma.featuredResource.create({
+      data: {
+        title: body.title,
+        description: body.description,
+        titleEn: body.titleEn || null,
+        descriptionEn: body.descriptionEn || null,
+        category: body.category,
+        categoryEn: body.categoryEn || null,
+        imageUrl: body.image,
+        bgColor:
+          body.backgroundColor || 'bg-gradient-to-br from-blue-500 to-blue-700',
+        enabled: body.isActive ?? true,
+        order: body.order || 1,
+      },
     });
+
+    // 轉換資料格式
+    const responseResource: FeaturedResource = {
+      id: createdResource.id,
+      title: createdResource.title,
+      description: createdResource.description,
+      titleEn: createdResource.titleEn,
+      descriptionEn: createdResource.descriptionEn,
+      image: createdResource.imageUrl || '',
+      category: createdResource.category,
+      categoryEn: createdResource.categoryEn,
+      backgroundColor: createdResource.bgColor,
+      textColor: 'text-white',
+      isActive: createdResource.enabled,
+      order: createdResource.order,
+      createdAt: createdResource.createdAt,
+      updatedAt: createdResource.updatedAt,
+    };
 
     return NextResponse.json({
       success: true,
-      data: createdResource,
+      data: responseResource,
       message: '特色資源創建成功',
     });
   } catch (error) {

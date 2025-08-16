@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useLocale } from 'next-intl';
 
 // 統計數據類型定義
 interface StatsData {
@@ -20,11 +21,13 @@ interface StatsData {
 export default function StatsSection() {
   const [statsData, setStatsData] = useState<StatsData | null>(null);
 
+  const locale = useLocale();
+
   // 載入統計數據
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await fetch('/api/stats');
+        const response = await fetch(`/api/stats?locale=${locale}`);
         if (response.ok) {
           const data = await response.json();
           setStatsData(data);
@@ -39,7 +42,7 @@ export default function StatsSection() {
     };
 
     fetchStats();
-  }, []);
+  }, [locale]);
 
   // 預設資料（如果API載入失敗）
   const defaultData: StatsData = {

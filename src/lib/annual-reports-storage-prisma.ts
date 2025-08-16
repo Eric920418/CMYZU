@@ -66,7 +66,9 @@ export class AnnualReportsStorage {
   async create(data: {
     year: number;
     title: string;
+    titleEn?: string;
     description?: string;
+    descriptionEn?: string;
     fileUrl: string;
     fileName: string;
     fileSize?: number;
@@ -83,7 +85,9 @@ export class AnnualReportsStorage {
         data: {
           year: data.year,
           title: data.title,
+          titleEn: data.titleEn,
           description: data.description,
+          descriptionEn: data.descriptionEn,
           fileUrl: data.fileUrl,
           fileName: data.fileName,
           fileSize: data.fileSize,
@@ -107,7 +111,9 @@ export class AnnualReportsStorage {
     data: {
       year?: number;
       title?: string;
+      titleEn?: string;
       description?: string;
+      descriptionEn?: string;
       fileUrl?: string;
       fileName?: string;
       fileSize?: number;

@@ -9,6 +9,7 @@ export async function GET() {
       select: {
         id: true,
         name: true,
+        nameEn: true,
         students: true,
         flag: true,
         latitude: true,
@@ -36,7 +37,8 @@ export async function POST(request: NextRequest) {
     // 這裡需要實際的用戶認證，暫時使用固定ID
     const authorId = 'cme475m500000lwvbwwlb3gqa'; // 使用系統管理員 ID，實際應用中需要從 session 獲取
 
-    const { name, students, flag, latitude, longitude } = await request.json();
+    const { name, nameEn, students, flag, latitude, longitude } =
+      await request.json();
 
     if (!name || !flag) {
       return NextResponse.json(
@@ -48,6 +50,7 @@ export async function POST(request: NextRequest) {
     const school = await prisma.partnerSchool.create({
       data: {
         name,
+        nameEn: nameEn || null,
         students: students || 0,
         flag,
         latitude: latitude || 0,

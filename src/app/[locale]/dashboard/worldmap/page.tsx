@@ -35,6 +35,7 @@ interface WorldMapStats {
 interface PartnerSchool {
   id: string;
   name: string;
+  nameEn?: string | null;
   students: number;
   flag: string;
   latitude: number;
@@ -162,6 +163,7 @@ export default function WorldMapManagementPage() {
   // 新增學校表單資料
   const [newSchool, setNewSchool] = useState({
     name: '',
+    nameEn: '',
     students: 0,
     flag: '',
     latitude: 0,
@@ -275,6 +277,7 @@ export default function WorldMapManagementPage() {
       setSuccessMessage('學校新增成功！');
       setNewSchool({
         name: '',
+        nameEn: '',
         students: 0,
         flag: '',
         latitude: 0,
@@ -550,14 +553,14 @@ export default function WorldMapManagementPage() {
                   <h4 className="text-sm font-medium text-gray-700 mb-3">
                     基本資訊
                   </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        學校名稱 <span className="text-red-500">*</span>
+                        學校中文名稱 <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="text"
-                        placeholder="請輸入學校全名"
+                        placeholder="請輸入學校中文全名"
                         value={newSchool.name}
                         onChange={(e) => {
                           setNewSchool({ ...newSchool, name: e.target.value });
@@ -576,6 +579,38 @@ export default function WorldMapManagementPage() {
                           {fieldErrors.name}
                         </p>
                       )}
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        學校英文名稱
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="請輸入學校英文全名"
+                        value={newSchool.nameEn}
+                        onChange={(e) => {
+                          setNewSchool({
+                            ...newSchool,
+                            nameEn: e.target.value,
+                          });
+                          if (fieldErrors.nameEn) {
+                            setFieldErrors({ ...fieldErrors, nameEn: '' });
+                          }
+                        }}
+                        className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+                          fieldErrors.nameEn
+                            ? 'border-red-300 focus:ring-red-500'
+                            : 'border-gray-300 focus:ring-primary-500'
+                        }`}
+                      />
+                      {fieldErrors.nameEn && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {fieldErrors.nameEn}
+                        </p>
+                      )}
+                      <p className="text-xs text-gray-500 mt-1">
+                        英文版前台將優先顯示英文名稱
+                      </p>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -783,7 +818,7 @@ export default function WorldMapManagementPage() {
                   </div>
 
                   {/* 手動查詢說明 */}
-                  <div className="mt-2 p-3 bg-blue-50 rounded-md">
+                  <div className="mt-2 p-3 bg-gray-50 rounded-md">
                     <p className="text-sm text-blue-800">
                       💡 <strong>手動取得座標：</strong>
                     </p>
@@ -810,6 +845,7 @@ export default function WorldMapManagementPage() {
                       setShowAddForm(false);
                       setNewSchool({
                         name: '',
+                        nameEn: '',
                         students: 0,
                         flag: '',
                         latitude: 0,
@@ -847,64 +883,113 @@ export default function WorldMapManagementPage() {
                       className="p-4 border border-gray-200 rounded-lg"
                     >
                       {editingSchool.id === school.id ? (
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <input
-                            type="text"
-                            value={editingSchool.name}
-                            onChange={(e) =>
-                              setEditingSchool({
-                                ...editingSchool,
-                                name: e.target.value,
-                              })
-                            }
-                            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                          />
-                          <input
-                            type="number"
-                            value={editingSchool.students}
-                            onChange={(e) =>
-                              setEditingSchool({
-                                ...editingSchool,
-                                students: parseInt(e.target.value) || 0,
-                              })
-                            }
-                            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                          />
-                          <input
-                            type="text"
-                            value={editingSchool.flag}
-                            onChange={(e) =>
-                              setEditingSchool({
-                                ...editingSchool,
-                                flag: e.target.value,
-                              })
-                            }
-                            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                          />
-                          <input
-                            type="number"
-                            step="any"
-                            value={editingSchool.latitude}
-                            onChange={(e) =>
-                              setEditingSchool({
-                                ...editingSchool,
-                                latitude: parseFloat(e.target.value) || 0,
-                              })
-                            }
-                            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                          />
-                          <input
-                            type="number"
-                            step="any"
-                            value={editingSchool.longitude}
-                            onChange={(e) =>
-                              setEditingSchool({
-                                ...editingSchool,
-                                longitude: parseFloat(e.target.value) || 0,
-                              })
-                            }
-                            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                          />
+                        <div className="space-y-4">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                學校中文名稱
+                              </label>
+                              <input
+                                type="text"
+                                placeholder="學校中文名稱"
+                                value={editingSchool.name}
+                                onChange={(e) =>
+                                  setEditingSchool({
+                                    ...editingSchool,
+                                    name: e.target.value,
+                                  })
+                                }
+                                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 w-full"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                學校英文名稱
+                              </label>
+                              <input
+                                type="text"
+                                placeholder="學校英文名稱"
+                                value={editingSchool.nameEn || ''}
+                                onChange={(e) =>
+                                  setEditingSchool({
+                                    ...editingSchool,
+                                    nameEn: e.target.value,
+                                  })
+                                }
+                                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 w-full"
+                              />
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                交流學生數
+                              </label>
+                              <input
+                                type="number"
+                                value={editingSchool.students}
+                                onChange={(e) =>
+                                  setEditingSchool({
+                                    ...editingSchool,
+                                    students: parseInt(e.target.value) || 0,
+                                  })
+                                }
+                                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 w-full"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                國家旗幟
+                              </label>
+                              <input
+                                type="text"
+                                value={editingSchool.flag}
+                                onChange={(e) =>
+                                  setEditingSchool({
+                                    ...editingSchool,
+                                    flag: e.target.value,
+                                  })
+                                }
+                                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 w-full"
+                              />
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                緯度
+                              </label>
+                              <input
+                                type="number"
+                                step="any"
+                                value={editingSchool.latitude}
+                                onChange={(e) =>
+                                  setEditingSchool({
+                                    ...editingSchool,
+                                    latitude: parseFloat(e.target.value) || 0,
+                                  })
+                                }
+                                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 w-full"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                經度
+                              </label>
+                              <input
+                                type="number"
+                                step="any"
+                                value={editingSchool.longitude}
+                                onChange={(e) =>
+                                  setEditingSchool({
+                                    ...editingSchool,
+                                    longitude: parseFloat(e.target.value) || 0,
+                                  })
+                                }
+                                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 w-full"
+                              />
+                            </div>
+                          </div>
                           <div className="flex gap-2">
                             <button
                               onClick={() => updateSchool(editingSchool)}

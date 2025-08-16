@@ -5,8 +5,12 @@ export async function createAlumni(data: {
   name: string;
   position: string;
   description: string;
+  nameEn?: string;
+  positionEn?: string;
+  descriptionEn?: string;
   imageUrl: string | null;
   achievements: string[];
+  achievementsEn?: string[];
   isActive: boolean;
   authorId: string;
 }) {
@@ -15,8 +19,12 @@ export async function createAlumni(data: {
       name: data.name,
       position: data.position,
       description: data.description,
+      nameEn: data.nameEn,
+      positionEn: data.positionEn,
+      descriptionEn: data.descriptionEn,
       imageUrl: data.imageUrl,
       achievements: data.achievements,
+      achievementsEn: data.achievementsEn || [],
       isActive: data.isActive,
       authorId: data.authorId,
     },
@@ -79,8 +87,12 @@ export async function updateAlumni(
     name?: string;
     position?: string;
     description?: string;
+    nameEn?: string;
+    positionEn?: string;
+    descriptionEn?: string;
     imageUrl?: string | null;
     achievements?: string[];
+    achievementsEn?: string[];
     isActive?: boolean;
   }
 ) {

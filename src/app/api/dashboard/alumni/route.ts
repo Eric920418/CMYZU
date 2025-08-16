@@ -62,7 +62,10 @@ export async function GET(request: NextRequest) {
         (alumni) =>
           alumni.name.toLowerCase().includes(search.toLowerCase()) ||
           alumni.position.toLowerCase().includes(search.toLowerCase()) ||
-          alumni.description.toLowerCase().includes(search.toLowerCase())
+          alumni.description.toLowerCase().includes(search.toLowerCase()) ||
+          alumni.nameEn?.toLowerCase().includes(search.toLowerCase()) ||
+          alumni.positionEn?.toLowerCase().includes(search.toLowerCase()) ||
+          alumni.descriptionEn?.toLowerCase().includes(search.toLowerCase())
       );
     }
 
@@ -116,8 +119,12 @@ export async function POST(request: NextRequest) {
       name: body.name,
       position: body.position,
       description: body.description,
+      nameEn: body.nameEn,
+      positionEn: body.positionEn,
+      descriptionEn: body.descriptionEn,
       imageUrl: body.imageUrl,
       achievements: body.achievements || [],
+      achievementsEn: body.achievementsEn || [],
       isActive: body.isActive !== undefined ? body.isActive : true,
       authorId: user.id,
     });

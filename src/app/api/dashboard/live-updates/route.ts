@@ -129,6 +129,9 @@ export async function POST(request: NextRequest) {
     const newLiveUpdate = await createLiveUpdate({
       title: body.title,
       content: body.content,
+      // 英文欄位
+      titleEn: body.titleEn,
+      contentEn: body.contentEn,
       priority: body.priority || 'MEDIUM',
       published: body.published || false,
       tags: body.tags || [],

@@ -13,6 +13,12 @@ export async function GET() {
       name: item.name,
       position: item.position,
       description: item.description,
+      // 英文欄位
+      nameEn: item.nameEn,
+      positionEn: item.positionEn,
+      descriptionEn: item.descriptionEn,
+      achievementsEn: item.achievementsEn,
+
       imageUrl: item.imageUrl,
       achievements: item.achievements,
       isActive: item.isActive,

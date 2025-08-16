@@ -65,7 +65,16 @@ export async function POST(request: NextRequest) {
     const user = verifyAuth(request);
 
     const body = await request.json();
-    const { year, title, description, fileUrl, fileName, fileSize } = body;
+    const {
+      year,
+      title,
+      titleEn,
+      description,
+      descriptionEn,
+      fileUrl,
+      fileName,
+      fileSize,
+    } = body;
 
     // 驗證必要欄位
     if (!year || !title || !fileUrl || !fileName) {
@@ -87,7 +96,9 @@ export async function POST(request: NextRequest) {
     const newReport = await annualReportsStorage.create({
       year: parseInt(year),
       title,
+      titleEn,
       description,
+      descriptionEn,
       fileUrl,
       fileName,
       fileSize: fileSize ? parseInt(fileSize) : undefined,

@@ -12,6 +12,7 @@ import {
   TrashIcon,
   ArrowUpIcon,
   ArrowDownIcon,
+  MagnifyingGlassIcon,
 } from '@heroicons/react/24/outline';
 
 // 排名數據類型
@@ -38,6 +39,19 @@ export default function RankingsPage() {
   const [rankings, setRankings] = useState<Ranking[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // 計算啟用的排名數量和剩餘名額
+  const activeRankingsCount = rankings.filter((r) => r.isActive).length;
+  const remainingSlots = 3 - activeRankingsCount;
+
+  // 篩選排名資料（支援無限數量）
+  const filteredRankings = rankings.filter(
+    (ranking) =>
+      ranking.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      ranking.organization.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      ranking.rank.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   // 檢查認證狀態
   useEffect(() => {
@@ -172,14 +186,58 @@ export default function RankingsPage() {
             <p className="text-gray-600 mt-2">
               {t('description', { default: '管理學校各項權威排名資訊' })}
             </p>
+            <div className="mt-3">
+              <div className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-white">
+                已啟用: {activeRankingsCount}/3 個排名
+                {remainingSlots > 0 && (
+                  <span className="ml-2 text-green-700">
+                    (還可新增 {remainingSlots} 個)
+                  </span>
+                )}
+                {remainingSlots === 0 && (
+                  <span className="ml-2 text-orange-700">(已達上限)</span>
+                )}
+              </div>
+            </div>
           </div>
           <button
             onClick={() => router.push('/dashboard/rankings/create')}
-            className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 flex items-center gap-2"
+            disabled={remainingSlots === 0}
+            className={`px-4 py-2 rounded-lg flex items-center gap-2 ${
+              remainingSlots === 0
+                ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                : 'bg-primary-600 text-white hover:bg-primary-700'
+            }`}
+            title={
+              remainingSlots === 0 ? '已達啟用排名上限，請先停用其他排名' : ''
+            }
           >
             <PlusIcon className="w-5 h-5" />
             {t('add-new', { default: '新增排名' })}
           </button>
+        </motion.div>
+
+        {/* 搜尋功能 - 支援大量排名項目管理 */}
+        <motion.div
+          className="bg-white rounded-xl shadow-sm border border-gray-200 p-4"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <div className="relative">
+            <MagnifyingGlassIcon className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              placeholder="搜尋排名類別、評鑑機構或排名..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+            />
+          </div>
+          {searchTerm && (
+            <p className="text-sm text-gray-600 mt-2">
+              找到 {filteredRankings.length} 個符合的排名項目
+            </p>
+          )}
         </motion.div>
 
         {/* 錯誤訊息 */}
@@ -205,15 +263,21 @@ export default function RankingsPage() {
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto"></div>
               <p className="text-gray-500 mt-2">載入中...</p>
             </div>
-          ) : rankings.length === 0 ? (
+          ) : filteredRankings.length === 0 ? (
             <div className="p-8 text-center text-gray-500">
-              <p>{t('no-rankings', { default: '尚未建立任何排名項目' })}</p>
-              <button
-                onClick={() => router.push('/dashboard/rankings/create')}
-                className="mt-4 text-primary-600 hover:text-primary-700"
-              >
-                {t('create-first', { default: '建立第一個排名項目' })}
-              </button>
+              {rankings.length === 0 ? (
+                <>
+                  <p>{t('no-rankings', { default: '尚未建立任何排名項目' })}</p>
+                  <button
+                    onClick={() => router.push('/dashboard/rankings/create')}
+                    className="mt-4 text-primary-600 hover:text-primary-700"
+                  >
+                    {t('create-first', { default: '建立第一個排名項目' })}
+                  </button>
+                </>
+              ) : (
+                <p>找不到符合搜尋條件的排名項目</p>
+              )}
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -244,7 +308,7 @@ export default function RankingsPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                  {rankings.map((ranking, index) => (
+                  {filteredRankings.map((ranking, index) => (
                     <tr key={ranking.id} className="hover:bg-gray-50">
                       <td className="py-4 px-4">
                         <div className="text-2xl font-bold text-primary-600">
@@ -297,7 +361,7 @@ export default function RankingsPage() {
                           </span>
                           <button
                             onClick={() => updateOrder(ranking.id, 'down')}
-                            disabled={index === rankings.length - 1}
+                            disabled={index === filteredRankings.length - 1}
                             className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-50"
                           >
                             <ArrowDownIcon className="w-4 h-4" />

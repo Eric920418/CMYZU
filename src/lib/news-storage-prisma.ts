@@ -14,6 +14,9 @@ export async function createNews(data: {
   title: string;
   content: string;
   excerpt?: string;
+  titleEn?: string;
+  contentEn?: string;
+  excerptEn?: string;
   imageUrl?: string;
   published?: boolean;
   featured?: boolean;

@@ -14,6 +14,9 @@ export default function CreateNewsPage() {
     title: '',
     excerpt: '',
     content: '',
+    titleEn: '',
+    excerptEn: '',
+    contentEn: '',
     image: '',
     isPublished: false,
   });
@@ -54,7 +57,16 @@ export default function CreateNewsPage() {
     }
 
     if (!formData.content.trim()) {
-      newErrors.content = '請輸入新聞內容';
+      newErrors.content = '請輸入中文新聞內容';
+    }
+
+    // 英文欄位驗證（可選）
+    if (formData.titleEn && formData.titleEn.length > 100) {
+      newErrors.titleEn = '英文標題不能超過 100 個字元';
+    }
+
+    if (formData.excerptEn && formData.excerptEn.length > 200) {
+      newErrors.excerptEn = '英文摘要不能超過 200 個字元';
     }
 
     if (!formData.image) {
@@ -81,9 +93,12 @@ export default function CreateNewsPage() {
         title: formData.title,
         excerpt: formData.excerpt,
         content: formData.content,
+        titleEn: formData.titleEn || undefined,
+        excerptEn: formData.excerptEn || undefined,
+        contentEn: formData.contentEn || undefined,
         imageUrl: formData.image, // 注意：API 期望 imageUrl，但表單使用 image
         published: formData.isPublished,
-        date: new Date(),
+        publishedAt: new Date(), // 修正：使用 publishedAt 而不是 date
         order: 0,
         views: 0,
       };
@@ -120,8 +135,11 @@ export default function CreateNewsPage() {
         title: formData.title,
         excerpt: formData.excerpt,
         content: formData.content,
+        titleEn: formData.titleEn || undefined,
+        excerptEn: formData.excerptEn || undefined,
+        contentEn: formData.contentEn || undefined,
         imageUrl: formData.image || '',
-        date: new Date(),
+        publishedAt: new Date(), // 修正：使用 publishedAt 而不是 date
         order: 0,
         views: 0,
         published: false, // 強制設為草稿
@@ -175,31 +193,31 @@ export default function CreateNewsPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* 基本資訊 */}
+          {/* 中文資訊 */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
           >
             <h2 className="text-lg font-semibold text-gray-900 mb-4">
-              基本資訊
+              中文資訊 *
             </h2>
 
             <div className="space-y-4">
-              {/* 標題 */}
+              {/* 中文標題 */}
               <div>
                 <label
                   htmlFor="title"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
-                  新聞標題 *
+                  中文標題 *
                 </label>
                 <input
                   type="text"
                   id="title"
                   value={formData.title}
                   onChange={(e) => handleInputChange('title', e.target.value)}
-                  placeholder="輸入新聞標題..."
+                  placeholder="輸入中文新聞標題..."
                   className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
                     errors.title ? 'border-red-300' : 'border-gray-300'
                   }`}
@@ -212,20 +230,20 @@ export default function CreateNewsPage() {
                 </p>
               </div>
 
-              {/* 摘要 */}
+              {/* 中文摘要 */}
               <div>
                 <label
                   htmlFor="excerpt"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
-                  新聞摘要 *
+                  中文摘要 *
                 </label>
                 <textarea
                   id="excerpt"
                   rows={3}
                   value={formData.excerpt}
                   onChange={(e) => handleInputChange('excerpt', e.target.value)}
-                  placeholder="輸入新聞摘要..."
+                  placeholder="輸入中文新聞摘要..."
                   className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
                     errors.excerpt ? 'border-red-300' : 'border-gray-300'
                   }`}
@@ -240,11 +258,81 @@ export default function CreateNewsPage() {
             </div>
           </motion.div>
 
-          {/* 新聞圖片 */}
+          {/* 英文資訊 */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
+            className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
+          >
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              English Content (Optional)
+            </h2>
+
+            <div className="space-y-4">
+              {/* 英文標題 */}
+              <div>
+                <label
+                  htmlFor="titleEn"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  English Title
+                </label>
+                <input
+                  type="text"
+                  id="titleEn"
+                  value={formData.titleEn}
+                  onChange={(e) => handleInputChange('titleEn', e.target.value)}
+                  placeholder="Enter English news title..."
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
+                    errors.titleEn ? 'border-red-300' : 'border-gray-300'
+                  }`}
+                />
+                {errors.titleEn && (
+                  <p className="mt-1 text-sm text-red-600">{errors.titleEn}</p>
+                )}
+                <p className="mt-1 text-xs text-gray-500">
+                  {formData.titleEn.length}/100 characters
+                </p>
+              </div>
+
+              {/* 英文摘要 */}
+              <div>
+                <label
+                  htmlFor="excerptEn"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  English Excerpt
+                </label>
+                <textarea
+                  id="excerptEn"
+                  rows={3}
+                  value={formData.excerptEn}
+                  onChange={(e) =>
+                    handleInputChange('excerptEn', e.target.value)
+                  }
+                  placeholder="Enter English news excerpt..."
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
+                    errors.excerptEn ? 'border-red-300' : 'border-gray-300'
+                  }`}
+                />
+                {errors.excerptEn && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.excerptEn}
+                  </p>
+                )}
+                <p className="mt-1 text-xs text-gray-500">
+                  {formData.excerptEn.length}/200 characters
+                </p>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* 新聞圖片 */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
             className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
           >
             <h2 className="text-lg font-semibold text-gray-900 mb-4">
@@ -268,15 +356,15 @@ export default function CreateNewsPage() {
             </div>
           </motion.div>
 
-          {/* 新聞內容 */}
+          {/* 中文新聞內容 */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
+            transition={{ delay: 0.3 }}
             className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
           >
             <h2 className="text-lg font-semibold text-gray-900 mb-4">
-              新聞內容
+              中文新聞內容 *
             </h2>
 
             <div>
@@ -284,14 +372,14 @@ export default function CreateNewsPage() {
                 htmlFor="content"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                詳細內容 *
+                中文詳細內容 *
               </label>
               <textarea
                 id="content"
                 rows={10}
                 value={formData.content}
                 onChange={(e) => handleInputChange('content', e.target.value)}
-                placeholder="輸入詳細的新聞內容..."
+                placeholder="輸入詳細的中文新聞內容..."
                 className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
                   errors.content ? 'border-red-300' : 'border-gray-300'
                 }`}
@@ -303,11 +391,48 @@ export default function CreateNewsPage() {
             </div>
           </motion.div>
 
+          {/* 英文新聞內容 */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
+          >
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              English News Content (Optional)
+            </h2>
+
+            <div>
+              <label
+                htmlFor="contentEn"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                English Content
+              </label>
+              <textarea
+                id="contentEn"
+                rows={10}
+                value={formData.contentEn}
+                onChange={(e) => handleInputChange('contentEn', e.target.value)}
+                placeholder="Enter detailed English news content..."
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
+                  errors.contentEn ? 'border-red-300' : 'border-gray-300'
+                }`}
+              />
+              {errors.contentEn && (
+                <p className="mt-1 text-sm text-red-600">{errors.contentEn}</p>
+              )}
+              <p className="mt-1 text-xs text-gray-500">
+                Supports Markdown syntax
+              </p>
+            </div>
+          </motion.div>
+
           {/* 發布設定 */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
+            transition={{ delay: 0.5 }}
             className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
           >
             <h2 className="text-lg font-semibold text-gray-900 mb-4">
@@ -334,7 +459,7 @@ export default function CreateNewsPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
+            transition={{ delay: 0.6 }}
             className="flex items-center justify-between pt-6 border-t border-gray-200"
           >
             <button

@@ -10,13 +10,22 @@ interface RouteParams {
 // 更新合作學校
 export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
-    const { name, students, flag, latitude, longitude, isActive, order } =
-      await request.json();
+    const {
+      name,
+      nameEn,
+      students,
+      flag,
+      latitude,
+      longitude,
+      isActive,
+      order,
+    } = await request.json();
 
     const school = await prisma.partnerSchool.update({
       where: { id: params.id },
       data: {
         name,
+        nameEn: nameEn !== undefined ? nameEn || null : undefined,
         students,
         flag,
         latitude,

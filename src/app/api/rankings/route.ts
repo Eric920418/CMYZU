@@ -64,9 +64,14 @@ export async function POST(request: NextRequest) {
       category,
       subtitle,
       description,
+      organization,
+      // 英文欄位
+      categoryEn,
+      subtitleEn,
+      descriptionEn,
+      organizationEn,
       logoUrl,
       logoAlt,
-      organization,
       year,
       isActive,
     } = body;
@@ -77,6 +82,23 @@ export async function POST(request: NextRequest) {
         { message: '排名、類別和評鑑機構為必填欄位' },
         { status: 400 }
       );
+    }
+
+    // 檢查啟用排名數量限制（最多三個）
+    if (isActive) {
+      const activeRankingsCount = await prisma.ranking.count({
+        where: { isActive: true },
+      });
+
+      if (activeRankingsCount >= 3) {
+        return NextResponse.json(
+          {
+            message:
+              '最多只能有三個啟用的排名項目，請先停用其他排名或將此排名設為停用狀態',
+          },
+          { status: 400 }
+        );
+      }
     }
 
     // 取得最大順序值
@@ -93,9 +115,14 @@ export async function POST(request: NextRequest) {
         category,
         subtitle: subtitle || null,
         description: description || null,
+        organization,
+        // 英文欄位
+        categoryEn: categoryEn || null,
+        subtitleEn: subtitleEn || null,
+        descriptionEn: descriptionEn || null,
+        organizationEn: organizationEn || null,
         logoUrl: logoUrl || null,
         logoAlt: logoAlt || null,
-        organization,
         year,
         order: nextOrder,
         isActive: Boolean(isActive),

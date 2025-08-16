@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import {
-  getFeaturedResource,
-  updateFeaturedResource,
-  deleteFeaturedResource,
-} from '@/data/featured-resources';
+import { FeaturedResource } from '@/types/dashboard';
+import { prisma } from '@/lib/prisma';
 
 // GET - 獲取單個特色資源
 export async function GET(
@@ -12,9 +9,11 @@ export async function GET(
 ) {
   try {
     const { id } = params;
-    const resource = getFeaturedResource(id);
+    const rawResource = await prisma.featuredResource.findUnique({
+      where: { id },
+    });
 
-    if (!resource) {
+    if (!rawResource) {
       return NextResponse.json(
         {
           success: false,
@@ -23,6 +22,24 @@ export async function GET(
         { status: 404 }
       );
     }
+
+    // 轉換資料格式
+    const resource: FeaturedResource = {
+      id: rawResource.id,
+      title: rawResource.title,
+      description: rawResource.description,
+      titleEn: rawResource.titleEn,
+      descriptionEn: rawResource.descriptionEn,
+      image: rawResource.imageUrl || '',
+      category: rawResource.category,
+      categoryEn: rawResource.categoryEn,
+      backgroundColor: rawResource.bgColor,
+      textColor: 'text-white',
+      isActive: rawResource.enabled,
+      order: rawResource.order,
+      createdAt: rawResource.createdAt,
+      updatedAt: rawResource.updatedAt,
+    };
 
     return NextResponse.json({
       success: true,
@@ -49,7 +66,10 @@ export async function PUT(
     const { id } = params;
     const body = await request.json();
 
-    const existingResource = getFeaturedResource(id);
+    // 檢查資源是否存在
+    const existingResource = await prisma.featuredResource.findUnique({
+      where: { id },
+    });
 
     if (!existingResource) {
       return NextResponse.json(
@@ -62,17 +82,39 @@ export async function PUT(
     }
 
     // 更新資源
-    const updatedResource = updateFeaturedResource(id, body);
+    const rawUpdatedResource = await prisma.featuredResource.update({
+      where: { id },
+      data: {
+        title: body.title,
+        description: body.description,
+        titleEn: body.titleEn || null,
+        descriptionEn: body.descriptionEn || null,
+        category: body.category,
+        categoryEn: body.categoryEn || null,
+        imageUrl: body.image,
+        bgColor: body.backgroundColor,
+        enabled: body.isActive,
+        order: body.order,
+      },
+    });
 
-    if (!updatedResource) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: '更新失敗',
-        },
-        { status: 500 }
-      );
-    }
+    // 轉換資料格式
+    const updatedResource: FeaturedResource = {
+      id: rawUpdatedResource.id,
+      title: rawUpdatedResource.title,
+      description: rawUpdatedResource.description,
+      titleEn: rawUpdatedResource.titleEn,
+      descriptionEn: rawUpdatedResource.descriptionEn,
+      image: rawUpdatedResource.imageUrl || '',
+      category: rawUpdatedResource.category,
+      categoryEn: rawUpdatedResource.categoryEn,
+      backgroundColor: rawUpdatedResource.bgColor,
+      textColor: 'text-white',
+      isActive: rawUpdatedResource.enabled,
+      order: rawUpdatedResource.order,
+      createdAt: rawUpdatedResource.createdAt,
+      updatedAt: rawUpdatedResource.updatedAt,
+    };
 
     return NextResponse.json({
       success: true,
@@ -98,7 +140,12 @@ export async function DELETE(
 ) {
   try {
     const { id } = params;
-    const deletedResource = deleteFeaturedResource(id);
+    // 刪除資源
+    const deletedResource = await prisma.featuredResource
+      .delete({
+        where: { id },
+      })
+      .catch(() => null);
 
     if (!deletedResource) {
       return NextResponse.json(

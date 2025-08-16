@@ -29,8 +29,12 @@ export default function EditAlumniPage({ params }: EditAlumniPageProps) {
     name: '',
     position: '',
     description: '',
+    nameEn: '',
+    positionEn: '',
+    descriptionEn: '',
     imageUrl: '',
     achievements: [''],
+    achievementsEn: [''],
     isActive: true,
   });
 
@@ -50,10 +54,17 @@ export default function EditAlumniPage({ params }: EditAlumniPageProps) {
             name: alumniData.name || '',
             position: alumniData.position || '',
             description: alumniData.description || '',
+            nameEn: alumniData.nameEn || '',
+            positionEn: alumniData.positionEn || '',
+            descriptionEn: alumniData.descriptionEn || '',
             imageUrl: alumniData.imageUrl || '',
             achievements:
               alumniData.achievements?.length > 0
                 ? alumniData.achievements
+                : [''],
+            achievementsEn:
+              alumniData.achievementsEn?.length > 0
+                ? alumniData.achievementsEn
                 : [''],
             isActive: alumniData.isActive,
           });
@@ -91,11 +102,29 @@ export default function EditAlumniPage({ params }: EditAlumniPageProps) {
     }));
   };
 
+  // 處理英文成就列表變更
+  const handleAchievementEnChange = (index: number, value: string) => {
+    const newAchievements = [...formData.achievementsEn];
+    newAchievements[index] = value;
+    setFormData((prev) => ({
+      ...prev,
+      achievementsEn: newAchievements,
+    }));
+  };
+
   // 新增成就項目
   const addAchievement = () => {
     setFormData((prev) => ({
       ...prev,
       achievements: [...prev.achievements, ''],
+    }));
+  };
+
+  // 新增英文成就項目
+  const addAchievementEn = () => {
+    setFormData((prev) => ({
+      ...prev,
+      achievementsEn: [...prev.achievementsEn, ''],
     }));
   };
 
@@ -108,6 +137,19 @@ export default function EditAlumniPage({ params }: EditAlumniPageProps) {
       setFormData((prev) => ({
         ...prev,
         achievements: newAchievements,
+      }));
+    }
+  };
+
+  // 移除英文成就項目
+  const removeAchievementEn = (index: number) => {
+    if (formData.achievementsEn.length > 1) {
+      const newAchievements = formData.achievementsEn.filter(
+        (_, i) => i !== index
+      );
+      setFormData((prev) => ({
+        ...prev,
+        achievementsEn: newAchievements,
       }));
     }
   };
@@ -137,13 +179,20 @@ export default function EditAlumniPage({ params }: EditAlumniPageProps) {
       const achievements = formData.achievements.filter(
         (achievement) => achievement.trim() !== ''
       );
+      const achievementsEn = formData.achievementsEn.filter(
+        (achievement) => achievement.trim() !== ''
+      );
 
       const response = await dashboardAPI.alumni.update(params.id, {
         name: formData.name.trim(),
         position: formData.position.trim(),
         description: formData.description.trim(),
+        nameEn: formData.nameEn.trim() || undefined,
+        positionEn: formData.positionEn.trim() || undefined,
+        descriptionEn: formData.descriptionEn.trim() || undefined,
         imageUrl: formData.imageUrl || undefined,
         achievements,
+        achievementsEn,
         isActive: formData.isActive,
       });
 
@@ -468,6 +517,139 @@ export default function EditAlumniPage({ params }: EditAlumniPageProps) {
                   />
                   <span className="ml-2 text-sm text-gray-900">啟用狀態</span>
                 </label>
+              </div>
+            </div>
+          </div>
+
+          {/* 英文版資料 */}
+          <div className="bg-white shadow rounded-lg">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h2 className="text-lg font-medium text-gray-900">
+                English Version
+              </h2>
+            </div>
+
+            <div className="p-6 space-y-6">
+              {/* 英文姓名 */}
+              <div>
+                <label
+                  htmlFor="nameEn"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Name (English)
+                </label>
+                <input
+                  type="text"
+                  id="nameEn"
+                  value={formData.nameEn}
+                  onChange={(e) => handleInputChange('nameEn', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                  placeholder="Enter alumni name in English"
+                />
+              </div>
+
+              {/* 英文職位 */}
+              <div>
+                <label
+                  htmlFor="positionEn"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Position (English)
+                </label>
+                <input
+                  type="text"
+                  id="positionEn"
+                  value={formData.positionEn}
+                  onChange={(e) =>
+                    handleInputChange('positionEn', e.target.value)
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                  placeholder="Enter position in English"
+                />
+              </div>
+
+              {/* 英文描述 */}
+              <div>
+                <label
+                  htmlFor="descriptionEn"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Description (English)
+                </label>
+                <textarea
+                  id="descriptionEn"
+                  rows={4}
+                  value={formData.descriptionEn}
+                  onChange={(e) =>
+                    handleInputChange('descriptionEn', e.target.value)
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                  placeholder="Enter alumni description in English"
+                />
+              </div>
+
+              {/* 英文主要成就 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Achievements (English)
+                </label>
+                <div className="space-y-3">
+                  {formData.achievementsEn.map((achievement, index) => (
+                    <div key={index} className="flex items-center space-x-2">
+                      <input
+                        type="text"
+                        value={achievement}
+                        onChange={(e) =>
+                          handleAchievementEnChange(index, e.target.value)
+                        }
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                        placeholder={`Achievement ${index + 1}`}
+                      />
+                      {formData.achievementsEn.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => removeAchievementEn(index)}
+                          className="p-2 text-red-500 hover:text-red-700"
+                        >
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                            />
+                          </svg>
+                        </button>
+                      )}
+                    </div>
+                  ))}
+
+                  <button
+                    type="button"
+                    onClick={addAchievementEn}
+                    className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                  >
+                    <svg
+                      className="w-4 h-4 mr-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                      />
+                    </svg>
+                    Add Achievement
+                  </button>
+                </div>
               </div>
             </div>
           </div>

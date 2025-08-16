@@ -5,15 +5,11 @@ import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
+import { useTranslations, useLocale } from 'next-intl';
 
 // 動態載入世界地圖組件（避免 SSR 問題）
 const WorldMap = dynamic(() => import('./WorldMap'), {
   ssr: false,
-  loading: () => (
-    <div className="w-full h-[500px] bg-gradient-to-br from-primary-800/50 to-primary-900/50 rounded-2xl p-6 backdrop-blur-sm border border-white/10 flex items-center justify-center">
-      <div className="text-white/60">載入地圖中...</div>
-    </div>
-  ),
 });
 
 // 排名數據類型
@@ -23,14 +19,21 @@ interface Ranking {
   category: string;
   subtitle?: string;
   description?: string;
+  organization: string;
+  // 英文欄位
+  categoryEn?: string;
+  subtitleEn?: string;
+  descriptionEn?: string;
+  organizationEn?: string;
   logoUrl?: string;
   logoAlt?: string;
-  organization: string;
   year: number;
   order: number;
 }
 
 export default function RankingSection() {
+  const t = useTranslations('Rankings');
+  const locale = useLocale();
   const [rankings, setRankings] = useState<Ranking[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -43,7 +46,7 @@ export default function RankingSection() {
         const response = await fetch('/api/rankings/public');
 
         if (!response.ok) {
-          throw new Error('取得排名數據失敗');
+          throw new Error('Failed to fetch ranking data');
         }
 
         const data = await response.json();
@@ -51,9 +54,11 @@ export default function RankingSection() {
         setError(null);
       } catch (err) {
         const errorMessage =
-          err instanceof Error ? err.message : '載入排名資料時發生未知錯誤';
+          err instanceof Error
+            ? err.message
+            : 'Unknown error loading ranking data';
         setError(errorMessage);
-        console.error('載入排名數據錯誤:', err);
+        console.error('Error loading ranking data:', err);
       } finally {
         setLoading(false);
       }
@@ -67,7 +72,10 @@ export default function RankingSection() {
     return (
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="text-red-600">載入排名資料時發生錯誤: {error}</div>
+          <div className="text-red-600">
+            {t('loading_error')}
+            {error}
+          </div>
         </div>
       </section>
     );
@@ -85,10 +93,10 @@ export default function RankingSection() {
           viewport={{ once: true }}
         >
           <h2 className="text-4xl md:text-5xl font-bold text-primary-700 mb-4">
-            本校世界頂尖大學之一
+            {t('title')}
           </h2>
           <p className="text-xl text-primary-100 max-w-3xl mx-auto">
-            以下信息截至2025年5月為最新。
+            {t('description')}
           </p>
         </motion.div>
 
@@ -96,14 +104,14 @@ export default function RankingSection() {
         {loading && (
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
-            <p className="text-gray-500 mt-4">載入排名資料中...</p>
+            <p className="text-gray-500 mt-4">{t('loading')}</p>
           </div>
         )}
 
-        {/* 排名卡片網格 */}
+        {/* 排名卡片網格 - 固定最多三張卡片 */}
         {!loading && rankings.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {rankings.map((ranking, index) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {rankings.slice(0, 3).map((ranking, index) => (
               <motion.div
                 key={ranking.id}
                 className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100"
@@ -129,23 +137,34 @@ export default function RankingSection() {
                 {/* 排名內容 */}
                 <div className="text-center space-y-3">
                   <h3 className="text-xl font-bold text-gray-900 leading-tight">
-                    {ranking.category}
-                    {ranking.subtitle && (
+                    {locale === 'en' && ranking.categoryEn
+                      ? ranking.categoryEn
+                      : ranking.category}
+                    {((locale === 'en' && ranking.subtitleEn) ||
+                      ranking.subtitle) && (
                       <span className="block text-lg font-medium text-gray-600 mt-1">
-                        {ranking.subtitle}
+                        {locale === 'en' && ranking.subtitleEn
+                          ? ranking.subtitleEn
+                          : ranking.subtitle}
                       </span>
                     )}
                   </h3>
 
-                  {ranking.description && (
+                  {((locale === 'en' && ranking.descriptionEn) ||
+                    ranking.description) && (
                     <p className="text-gray-600 text-sm">
-                      {ranking.description}
+                      {locale === 'en' && ranking.descriptionEn
+                        ? ranking.descriptionEn
+                        : ranking.description}
                     </p>
                   )}
 
                   {/* 年度資訊 */}
                   <p className="text-xs text-gray-500">
-                    {ranking.year} • {ranking.organization}
+                    {ranking.year} •{' '}
+                    {locale === 'en' && ranking.organizationEn
+                      ? ranking.organizationEn
+                      : ranking.organization}
                   </p>
                 </div>
 
@@ -175,7 +194,7 @@ export default function RankingSection() {
         {/* 無排名資料時的顯示 */}
         {!loading && rankings.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-gray-500">目前暫無排名資料</p>
+            <p className="text-gray-500">{t('no_rankings')}</p>
           </div>
         )}
 
@@ -188,8 +207,7 @@ export default function RankingSection() {
           viewport={{ once: true }}
         >
           <p className="text-sm text-primary-950 max-w-3xl mx-auto w-1/2">
-            排名資訊來源於各大權威教育評鑑機構，包含泰晤士高等教育世界大學排名（THE）、QS世界大學排名等國際認可之評鑑系統。
-            所有數據均定期更新，確保資訊準確性與時效性。
+            {t('bottom_note')}
           </p>
         </motion.div>
       </div>
@@ -200,9 +218,11 @@ export default function RankingSection() {
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.3 }}
         viewport={{ once: true }}
-        className="mt-20"
+        className="mt-40"
       >
-        <WorldMap />
+        <div className="w-full h-[500px]  rounded-2xl p-6  flex items-center justify-center">
+          <WorldMap />
+        </div>
       </motion.div>
     </section>
   );

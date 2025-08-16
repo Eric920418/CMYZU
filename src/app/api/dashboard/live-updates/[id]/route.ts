@@ -132,6 +132,9 @@ export async function PUT(
     const updatedLiveUpdate = await updateLiveUpdate(id, {
       title: body.title,
       content: body.content,
+      // 英文欄位
+      titleEn: body.titleEn,
+      contentEn: body.contentEn,
       priority: body.priority,
       published: body.published,
       tags: body.tags,
